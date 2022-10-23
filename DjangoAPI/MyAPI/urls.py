@@ -5,7 +5,7 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register('MyAPI', views.heartDiseasePredictionView)
 urlpatterns = [
-	path('form/', views.cxcontact, name='cxform'),
-    path('api/', include(router.urls)),
-    path('status/', views.heartResult)
+	path('', views.cxcontact, name='cxform'),
+    # path('api/', include(router.urls)),
+    # path('status/', views.heartResult)
 ] 

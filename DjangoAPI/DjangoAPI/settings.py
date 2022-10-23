@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
 from pathlib import Path
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,9 +26,9 @@ SECRET_KEY = 'django-insecure--4fp-8-m6s9^4oieosszb0ldr!38jl%8_)!7l%b*ls8clfjrg_
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# DEBUG = "DJANGO_DEBUG" in os.environ and os.environ["DJANGO_DEBUG"] == "ON"
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -40,10 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'MyAPI',
+    "DjangoAPI.spa",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -57,7 +60,8 @@ ROOT_URLCONF = 'DjangoAPI.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 'DIRS': [],
+        "DIRS": ["DjangoAPI/templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,10 +121,55 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, "DjangoAPI", "staticfiles")
+# STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "DjangoAPI", "static"),)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = reverse_lazy("login")
+LOGIN_REDIRECT_URL = reverse_lazy("spa")
+LOGOUT_REDIRECT_URL = reverse_lazy("spa")
+
+logging_level = (
+    "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING_LEVEL"]
+)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "console": {
+            "format": "[%(asctime)s][%(levelname)8s][%(name)16.16s]@[%(lineno)5s]$ %(message)s"
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "console",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+        "propagate": False,
+    },
+    "loggers": {
+        "django.server": {
+            "level": "WARNING",
+            "handlers": ["console"],
+            "propagate": False,
+        },
+        "myapp": {
+            "level": logging_level,
+            "handlers": ["console"],
+            "propagate": False,
+        },
+    },
+}
