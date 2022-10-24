@@ -1,6 +1,25 @@
+from enum import unique
 from django.db import models
 
 # Create your models here.
+class Doctor(models.Model):
+    doctor_id = models.AutoField(primary_key=True)
+    password = models.CharField(max_length=15)
+    name = models.CharField(max_length=15)
+    registrationNo = models.IntegerField()
+    placeOfPractice = models.CharField(max_length=15)
+    university = models.CharField(max_length=15)
+    email = models.CharField(max_length=15)
+    phone = models.IntegerField()
+
+class Patient(models.Model):
+    patient_id = models.AutoField(primary_key=True)
+    password = models.CharField(max_length=15)
+    name = models.CharField(max_length=15)
+    email = models.CharField(max_length=15)
+    phone = models.IntegerField()
+    connectedDoctor = models.ForeignKey(Doctor, on_delete=models.DO_NOTHING)
+
 class heartDiseasePrediction(models.Model):
     SEX_CHOICES = (
         ("Male", "Male"),
@@ -49,7 +68,7 @@ class heartDiseasePrediction(models.Model):
         ("reversable defect", "reversable defect")
     )
 
-    form_id = models.IntegerField(default=0)
+    id = models.AutoField(primary_key=True)
     age = models.IntegerField(default=0)
     sex = models.CharField(max_length=15, choices=SEX_CHOICES)
     cp = models.CharField(max_length=15, choices=CP_CHOICES)
@@ -63,6 +82,14 @@ class heartDiseasePrediction(models.Model):
     slope = models.CharField(max_length=15, choices=SLOPE_CHOICES)
     ca = models.CharField(max_length=15, choices=CA_CHOICES)
     thal = models.CharField(max_length=30, choices=THAL_CHOICES)
-    
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, default= None)
+    created_at = models.DateTimeField('%m/%d/%Y %H:%M:%S', auto_now_add=True)
     def __str__(self):
-        return "{}, {}".format(self.form_id, self.age)
+        return "{}, {}".format(self.id, self.age)
+
+class Admin(models.Model):
+    admin_id = models.AutoField(primary_key=True)
+    password = models.CharField(max_length=15)
+    name = models.CharField(max_length=15)
+    email = models.CharField(max_length=15)
+    phone = models.IntegerField()

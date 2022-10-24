@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from django.core import serializers
@@ -6,11 +8,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.http.response import JsonResponse
 from django.contrib import messages
 from rest_framework.parsers import JSONParser
-from . models import heartDiseasePrediction
+from . models import heartDiseasePrediction, Patient, Doctor, Admin
 from . forms import heartDiseasePredictionForm
-from . serializers import heartDiseasePredictionSerializers
+from . serializers import heartDiseasePredictionSerializers, patientSerializers,doctorSerializers,adminSerializers
+
+from django.core.files.storage import default_storage
+
 import pickle
 import joblib
 import json
@@ -21,7 +27,43 @@ from sklearn.preprocessing import MinMaxScaler
 from collections import defaultdict, Counter
 
 # Create your views here.
+@csrf_exempt
+def heartDiseasePredictionAPI(request, id=0):
+    if request.method=="GET":
+        heartDiseasePred = heartDiseasePrediction.objects.all()
+        heartDiseasePrediction_serializer = heartDiseasePredictionSerializers(heartDiseasePred, many=True)
+        return JsonResponse(heartDiseasePrediction_serializer.data, safe=False)
+    elif request.method == "POST":
+        print(request)
+        heartDiseasePrediction_data = JSONParser().parse(request)
+        heartDiseasePrediction_serializer = heartDiseasePredictionSerializers(data = heartDiseasePrediction_data)
+        if heartDiseasePrediction_serializer.is_valid():
+            heartDiseasePrediction_serializer.save()
+            return JsonResponse("Added Successfully", safe = False)
+        return JsonResponse("Failed to Add", safe = False)
+    elif request.method == "PUT":
+        heartDiseasePrediction_data = JSONParser().parse(request)
+        heartDiseasePred = heartDiseasePrediction.objects.get(id=heartDiseasePrediction_data["id"])
+        heartDiseasePrediction_serializer=heartDiseasePredictionSerializers(heartDiseasePred,data=heartDiseasePrediction_data)
+        if heartDiseasePrediction_serializer.is_valid():
+            heartDiseasePrediction_serializer.save()
+            return JsonResponse("Updated Successfully",safe=False)
+        return JsonResponse("Failed to Update")
+    elif request.method=='DELETE':
+        heartDiseasePred=heartDiseasePrediction.objects.get(id=id)
+        heartDiseasePred.delete()
+        return JsonResponse("Deleted Successfully",safe=False)
+    elif request.method =='PURGE':
+        heartDiseasePred=heartDiseasePrediction.objects.all()
+        heartDiseasePred.delete()
+        return JsonResponse("Deleted All Successfully",safe=False)
 
+# @csrf_exempt
+# def SaveFile(request):
+#     file=request.FILES['file']
+#     file_name=default_storage.save(file.name,file)
+#     return JsonResponse(file_name,safe=False)
+    
 class heartDiseasePredictionView(viewsets.ModelViewSet):
 	queryset = heartDiseasePrediction.objects.all()
 	serializer_class = heartDiseasePredictionSerializers
@@ -73,10 +115,11 @@ def heartResult(request):
 
 
 def cxcontact(request):
+    print(request)
     if request.method == 'POST':
         form = heartDiseasePredictionForm(request.POST)
         if form.is_valid():
-            form_id = form.cleaned_data['form_id']
+            # id = form.cleaned_data['id']
             age = form.cleaned_data['age']
             sex = form.cleaned_data['sex']
             cp = form.cleaned_data['cp']
@@ -90,6 +133,8 @@ def cxcontact(request):
             slope = form.cleaned_data['slope']
             ca = form.cleaned_data['ca']
             thal = form.cleaned_data['thal']
+            # patient = form.cleaned_data['patient']
+            # created_at = form.cleaned_data["created_at"]
             myDict = (request.POST).dict()
             # print(myDict)
             df=pd.DataFrame(myDict, index=[0])
@@ -102,8 +147,30 @@ def cxcontact(request):
             # print(ohevalue(df))
             answer = heartResult(ohevalue(df))
             messages.success(request, "Application Status: {}".format(answer))
+            # heartDiseasePredictionAPI(request)
             # print(ohevalue(df))
+            form.save()
+            # heartDiseasePrediction_data = JSONParser().parse(request)
+            # heartDiseasePrediction_serializer = heartDiseasePredictionSerializers(data = heartDiseasePrediction_data)
+            # if heartDiseasePrediction_serializer.is_valid():
+            #     heartDiseasePrediction_serializer.save()
+                # return JsonResponse("Added Successfully", safe = False)
+            # return JsonResponse("Failed to Add", safe = False)
+            
     form = heartDiseasePredictionForm()
 
-    return render(request, "myform/cxform.html", {"form": form})
+    return render(request, "myform/form2.html", {"form": form})
             
+def index(request):
+    heartDisease = heartDiseasePrediction.objects.all()
+    form = MyForm()
+
+    if request.method=="POST":
+        form = MyForm(request.POST)
+        if form.is_valid():
+            form.save()
+        messages.success(request, "Application Status: {}".format(answer))
+        # return redirect('bloglist')
+        # https://stackoverflow.com/questions/60550430/django-3-how-to-set-article-model-foreign-key-as-logged-in-user-id
+
+    return render(request, "myform/cxform.html", {"form": form})
