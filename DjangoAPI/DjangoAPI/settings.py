@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'MyAPI',
     'corsheaders',
+    'widget_tweaks',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -87,7 +88,7 @@ DATABASES = {
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'CLIENT': {
             "host": "mongodb+srv://saurabhkovoor:reyrex77@heartassist.d3kxafq.mongodb.net/?retryWrites=true&w=majority",
-            "name": "mytestdb",
+            "name": "heartpred",
             "authMechanism":"SCRAM-SHA-1" # For atlas cloud db
         }
     }
@@ -134,3 +135,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "MyAPI.User"

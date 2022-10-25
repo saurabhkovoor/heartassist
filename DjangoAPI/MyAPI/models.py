@@ -1,24 +1,107 @@
+from asyncio import AbstractServer
 from enum import unique
 from django.db import models
+# from djongo import models
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+class User(AbstractUser):
+    is_doctor = models.BooleanField(default=False)
+    is_patient = models.BooleanField(default=False)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+
+# class User(AbstractUser):
+#     class Role(models.TextChoices):
+#         ADMIN = "ADMIN", 'Admin'
+#         PATIENT = "PATIENT", "Patient"
+#         DOCTOR = "DOCTOR", "Doctor"
+#     base_role = Role.ADMIN
+#     role = models.CharField(max_length=50, choices=Role.choices)
+
+#     def save(self, *args, **kwargs):
+#         if not self.pk:
+#             self.role = self.base_role
+#             return super().save(*args, **kwargs)
 
 # Create your models here.
+
 class Doctor(models.Model):
-    doctor_id = models.AutoField(primary_key=True)
-    password = models.CharField(max_length=15)
-    name = models.CharField(max_length=15)
-    registrationNo = models.IntegerField()
+    user = models.OneToOneField(User, on_delete = models.CASCADE, primary_key = True)
+    phone_number = models.CharField(max_length=20)
+    registrationNo = models.CharField(max_length=15)
     placeOfPractice = models.CharField(max_length=15)
-    university = models.CharField(max_length=15)
-    email = models.CharField(max_length=15)
-    phone = models.IntegerField()
+    university = models.CharField(max_length = 15)
 
 class Patient(models.Model):
-    patient_id = models.AutoField(primary_key=True)
-    password = models.CharField(max_length=15)
-    name = models.CharField(max_length=15)
-    email = models.CharField(max_length=15)
-    phone = models.IntegerField()
+    user = models.OneToOneField(User, on_delete = models.CASCADE, primary_key = True)
+    phone_number = models.CharField(max_length=20)
     connectedDoctor = models.ForeignKey(Doctor, on_delete=models.DO_NOTHING)
+
+class Admin(models.Model):
+    user = models.OneToOneField(User, on_delete = models.CASCADE, primary_key = True)
+    phone_number = models.CharField(max_length=20)
+
+# class DoctorManager(BaseUserManager):
+#     def get_queryset(self, *args, **kwargs):
+#         results = super().get_queryset(*args, **kwargs)
+#         return results.filter(role=User.Role.DOCTOR)
+
+# class Doctor(User):
+#     base_role = User.Role.DOCTOR
+
+#     doctor = DoctorManager()
+#     class Meta:
+#         proxy = True
+
+# @receiver(post_save, sender=Doctor)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created and instance.role == "DOCTOR":
+#         DoctorProfile.objects.create(user=instance)
+
+# class DoctorProfile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     doctor_id = models.IntegerField(null=True, blank=True)
+    # doctor_id = models.CharField(max_length=50)
+    # doctor_id = models.AutoField(primary_key=True)
+    # doctor_id = models.BigAutoField(primary_key=True)
+    # registrationNo = models.IntegerField()
+    # placeOfPractice = models.CharField(max_length=15)
+    # university = models.CharField(max_length=15)
+    # phone = models.IntegerField()
+    
+    # password = models.CharField(max_length=15)
+    # name = models.CharField(max_length=15)
+    # email = models.CharField(max_length=15)
+
+# class PatientManager(BaseUserManager):
+#     def get_queryset(self, *args, **kwargs):
+#         results = super().get_queryset(*args, **kwargs)
+#         return results.filter(role=User.Role.PATIENT)
+
+# class Patient(User):
+#     base_role = User.Role.PATIENT
+
+#     patient = PatientManager()
+
+#     class Meta:
+#         proxy = True
+
+# class PatientProfile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     patient_id = models.IntegerField(null=True, blank=True)
+    # patient_id = models.AutoField(primary_key=True)
+    # connectedDoctor = models.ForeignKey(DoctorProfile, on_delete=models.DO_NOTHING)
+    # password = models.CharField(max_length=15)
+    # name = models.CharField(max_length=15)
+    # email = models.CharField(max_length=15)
+    # phone = models.IntegerField()
+
+# @receiver(post_save, sender=Patient)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created and instance.role == "PATIENT":
+#         PatientProfile.objects.create(user=instance)
 
 class heartDiseasePrediction(models.Model):
     SEX_CHOICES = (
@@ -84,12 +167,34 @@ class heartDiseasePrediction(models.Model):
     thal = models.CharField(max_length=30, choices=THAL_CHOICES)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, default= None)
     created_at = models.DateTimeField('%m/%d/%Y %H:%M:%S', auto_now_add=True)
+    result = models.IntegerField(default=0)
     def __str__(self):
         return "{}, {}".format(self.id, self.age)
 
-class Admin(models.Model):
-    admin_id = models.AutoField(primary_key=True)
-    password = models.CharField(max_length=15)
-    name = models.CharField(max_length=15)
-    email = models.CharField(max_length=15)
-    phone = models.IntegerField()
+# class AdminManager(BaseUserManager):
+#     def get_queryset(self, *args, **kwargs):
+#         results = super().get_queryset(*args, **kwargs)
+#         return results.filter(role=User.Role.ADMIN)
+
+# class Admin(User):
+#     base_role = User.Role.ADMIN
+
+#     admin = AdminManager()
+
+#     class Meta:
+#         proxy = True
+
+# @receiver(post_save, sender=Admin)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created and instance.role == "ADMIN":
+#         AdminProfile.objects.create(user=instance)
+
+# class AdminProfile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     admin_id = models.IntegerField(null=True, blank=True)
+    # admin_id = models.BigAutoField(primary_key=True)
+    # admin_id = models.AutoField(primary_key=True)
+    # password = models.CharField(max_length=15)
+    # name = models.CharField(max_length=15)
+    # email = models.CharField(max_length=15)
+    # phone = models.IntegerField()

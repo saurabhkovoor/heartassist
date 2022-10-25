@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import viewsets
@@ -11,11 +11,15 @@ from django.http import JsonResponse
 from django.http.response import JsonResponse
 from django.contrib import messages
 from rest_framework.parsers import JSONParser
-from . models import heartDiseasePrediction, Patient, Doctor, Admin
-from . forms import heartDiseasePredictionForm
-from . serializers import heartDiseasePredictionSerializers, patientSerializers,doctorSerializers,adminSerializers
+from . models import User, heartDiseasePrediction, Patient, Doctor, Admin
+from . forms import heartDiseasePredictionForm, PatientSignUpForm, DoctorSignUpForm
+from . serializers import heartDiseasePredictionSerializers
 
 from django.core.files.storage import default_storage
+
+from django.views.generic import CreateView
+from django.contrib.auth import login, logout,authenticate
+from django.contrib.auth.forms import AuthenticationForm
 
 import pickle
 import joblib
@@ -117,6 +121,7 @@ def heartResult(request):
 def cxcontact(request):
     print(request)
     if request.method == 'POST':
+        # print(request.POST)
         form = heartDiseasePredictionForm(request.POST)
         if form.is_valid():
             # id = form.cleaned_data['id']
@@ -145,10 +150,21 @@ def cxcontact(request):
             # messages.success(request,'Application Status: {}'.format(answer))
             # print(df)
             # print(ohevalue(df))
+           
             answer = heartResult(ohevalue(df))
+            # form["result"] = answer
+            # print(form["result"])
+            # print(form["result"].data)
+            # form["result"].data.value(answer)
+            # print(form["result"])
+
             messages.success(request, "Application Status: {}".format(answer))
+            # _mutable = request.GET._mutable
+            # form.fields['result'].value = answer
+            
             # heartDiseasePredictionAPI(request)
             # print(ohevalue(df))
+            # print(form)
             form.save()
             # heartDiseasePrediction_data = JSONParser().parse(request)
             # heartDiseasePrediction_serializer = heartDiseasePredictionSerializers(data = heartDiseasePrediction_data)
@@ -159,8 +175,52 @@ def cxcontact(request):
             
     form = heartDiseasePredictionForm()
 
-    return render(request, "myform/form2.html", {"form": form})
+    return render(request, "myform/cxform.html", {"form": form})
             
+def register(request):
+    return render(request, 'register.html')
+
+class patient_register(CreateView):
+    model = User
+    form_class = PatientSignUpForm
+    template_name = "patient_register.html"
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect("/")
+
+class doctor_register(CreateView):
+    model = User
+    form_class = DoctorSignUpForm
+    template_name = "doctor_register.html"
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect("/")
+
+def login_request(request):
+    if request.method=='POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None :
+                login(request,user)
+                return redirect('/')
+            else:
+                messages.error(request,"Invalid username or password")
+        else:
+                messages.error(request,"Invalid username or password")
+    return render(request, 'login.html',
+    context={'form':AuthenticationForm()})
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
+
 def index(request):
     heartDisease = heartDiseasePrediction.objects.all()
     form = MyForm()

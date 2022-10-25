@@ -15,7 +15,9 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api-auth/', include("rest_framework.urls", namespace="rest_framework")),
     path('status/', views.heartResult),
-    
+    path('register/', views.register,name='register'),
+    path('patient_register/', views.patient_register.as_view(), name='patient_register'),
+    path('doctor_register/', views.doctor_register.as_view(), name='doctor_register'),
     re_path(r'^heartDiseasePrediction$',views.heartDiseasePredictionAPI),
     re_path(r'^heartDiseasePrediction/([0-9]+)$',views.heartDiseasePredictionAPI),
 

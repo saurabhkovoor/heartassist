@@ -1,0 +1,7 @@
+.heart-form p:last-child{
+    visibility: none;
+}
+
+p {
+    color: red;
+}
