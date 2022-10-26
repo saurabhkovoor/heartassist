@@ -165,7 +165,7 @@ class heartDiseasePrediction(models.Model):
     slope = models.CharField(max_length=15, choices=SLOPE_CHOICES)
     ca = models.CharField(max_length=15, choices=CA_CHOICES)
     thal = models.CharField(max_length=30, choices=THAL_CHOICES)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, default= None)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default= None, blank = True)
     created_at = models.DateTimeField('%m/%d/%Y %H:%M:%S', auto_now_add=True)
     result = models.IntegerField(default=0)
     def __str__(self):

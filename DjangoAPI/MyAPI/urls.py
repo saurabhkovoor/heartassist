@@ -11,13 +11,17 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register('MyAPI', views.heartDiseasePredictionView)
 urlpatterns = [
-	path('form/', views.cxcontact, name='cxform'),
+	# path('form/', views.heartForm, name='heartForm'),
+    path("", views.heartForm, name="heartForm"),
+    # path('', views.heartForm, name='Homepage'),
     path('api/', include(router.urls)),
     path('api-auth/', include("rest_framework.urls", namespace="rest_framework")),
     path('status/', views.heartResult),
     path('register/', views.register,name='register'),
     path('patient_register/', views.patient_register.as_view(), name='patient_register'),
     path('doctor_register/', views.doctor_register.as_view(), name='doctor_register'),
+    path('login/', views.login_request, name="login"),
+    path('logout/', views.logout_view, name="logout"),
     re_path(r'^heartDiseasePrediction$',views.heartDiseasePredictionAPI),
     re_path(r'^heartDiseasePrediction/([0-9]+)$',views.heartDiseasePredictionAPI),
 

@@ -88,7 +88,7 @@ DATABASES = {
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'CLIENT': {
             "host": "mongodb+srv://saurabhkovoor:reyrex77@heartassist.d3kxafq.mongodb.net/?retryWrites=true&w=majority",
-            "name": "heartpred",
+            "name": "heartpred2",
             "authMechanism":"SCRAM-SHA-1" # For atlas cloud db
         }
     }

@@ -1,0 +1,79 @@
+{% extends 'headerPage.html' %}
+{% block content%}
+<h1>Heart Disease Risk Calculator</h1>
+<p>Powered by the best performing machine learning model designed and
+    developed after performing extensive comparative tests, this calculator
+    predicts the likelihood of you developing cardiovascular diseases or heart
+    diseases over the next 10 years. It requires some physiological data inputs
+    which are potential risk factors to calculator your risk. So, be sure to enter
+    your most recent values.
+    For more information about this calculator, visit the About page, by clicking
+    here.</p>
+<p>
+    Notes:
+    - You can consult with a doctor to assist in understanding your personal risk and interpreting these
+    results.
+    • The calculator may overestimate or underestimate your risk, hence, it cannot classify for certain
+    100% whether you will have a cardiovascular event.
+    -You can save your records to the system for future viewing or comparisons, by signing up or logging
+    in to your patient account.  
+</p>
+<form method='post'>
+    {% csrf_token %}
+    <p>Enter the patient's information below:</p>
+    {{form|linebreaks}}
+    <button type='submit'>Submit</button>
+    <button type='reset'>Reset</button>
+</form>
+{% if messages %}
+<ul class="messages">
+{% for message in messages %}
+<li {% if message.tags %} class=" {{ message.tags }} " {% endif %}>
+{{ message }} </li>
+{% endfor %}
+</ul>
+{% endif %}
+
+ {%  if answer >= 0  %}
+ <h1>Results, Your Heart Disease Risk Level is <br>{{answer}} out of 4</h1>
+ 
+ {%  if answer == 0 %}
+ <p> Meaning you are at little to no risk</p>
+ {% endif %}
+ {%  if answer == 1 %}
+ <p> Meaning there is risk, but at a low rate</p>
+ {% endif %}
+ {%  if answer == 2 %}
+ <p> Meaning you have intermediate level of risk to obtain heart disease</p>
+ {% endif %}
+ {%  if answer == 3 %}
+ <p> Meaning you are relatively high risk</p>
+ {% endif %}
+ {%  if answer == 4 %}
+ <p> Meaning you are at very high risk</p>
+ {% endif %}
+
+ {%  if answer > 0 %}  
+ <h2>Additional Info</h2>
+ <p>*General statement describing user's risk, and
+    factors contributing to risk*</p>
+
+
+{%  if "age" in addd  %}
+<p> You're old</p>
+{% endif %}
+{% endif %}
+<button onclick="window.print();return false;" >Print</button>
+<button onclick="window.location.href=window.location.href">Retry</button>
+
+
+ <h3>If the response is good. Do you weant to save it in DB?
+ </h3>
+ <input type="hidden" id="lname" name="mpgVal" value={{answer}}>
+ <input type="submit" value="Submit" ></div>
+ {% else%}
+ <!-- <input type="submit" value="Submit" ></div> -->
+ {% endif %}
+
+
+{% endblock %}

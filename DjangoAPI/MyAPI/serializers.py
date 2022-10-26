@@ -5,7 +5,7 @@ class heartDiseasePredictionSerializers(serializers.ModelSerializer):
     class Meta:
         model = heartDiseasePrediction
         # fields = '__all__'
-        fields=("id","age","sex","cp","trestbps","chol","fbs","restecg","thalch","exang","oldpeak","slope","ca","thal","created_at","patient","result") 
+        fields=("id","age","sex","cp","trestbps","chol","fbs","restecg","thalch","exang","oldpeak","slope","ca","thal","created_at","user","result") 
 
 # class patientSerializers(serializers.ModelSerializer):
 #     class Meta:

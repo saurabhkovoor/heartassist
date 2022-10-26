@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import viewsets
@@ -30,7 +30,17 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from collections import defaultdict, Counter
 
+from django.contrib.auth.decorators import login_required
+
+
+#might not be needed
+from pymongo import MongoClient
+client = MongoClient('localhost', 27017)
+db = client['mpgDataBase'] # need to update
+collectionD = db['mpgTable'] # need to update
+
 # Create your views here.
+
 @csrf_exempt
 def heartDiseasePredictionAPI(request, id=0):
     if request.method=="GET":
@@ -118,11 +128,13 @@ def heartResult(request):
         # return "hello"
 
 
-def cxcontact(request):
+def heartForm(request):
     print(request)
     if request.method == 'POST':
         # print(request.POST)
         form = heartDiseasePredictionForm(request.POST)
+        # print(form)
+        # print(request.POST.dict)
         if form.is_valid():
             # id = form.cleaned_data['id']
             age = form.cleaned_data['age']
@@ -140,10 +152,14 @@ def cxcontact(request):
             thal = form.cleaned_data['thal']
             # patient = form.cleaned_data['patient']
             # created_at = form.cleaned_data["created_at"]
+            # print((request.POST).dict())
             myDict = (request.POST).dict()
             # print(myDict)
             df=pd.DataFrame(myDict, index=[0])
             
+            addd = []
+            if int(myDict["age"])>60:
+                addd.append("age")
             # answer=heartResult(ohevalue(df))[0]
             # Xscalers=heartResult(ohevalue(df))[1]
             # print(Xscalers)
@@ -157,26 +173,80 @@ def cxcontact(request):
             # print(form["result"].data)
             # form["result"].data.value(answer)
             # print(form["result"])
-
+            context = {"answer": answer, "form": form, "addd": addd}
             messages.success(request, "Application Status: {}".format(answer))
             # _mutable = request.GET._mutable
             # form.fields['result'].value = answer
+            # print(request.POST)
+            print("request 2")
+            request2 = request.POST.dict()
+            print(request2)
+            request2["result"]= answer
+            form2 = heartDiseasePredictionForm(request2)
+            # try saving
+            if request.user.is_authenticated:
+                print(request.user)
+                usero = get_object_or_404(User, username=request.user)
+                userid = usero.id
+                print("user id")
+                print(userid)
+                print("request 2")
+                request2 = request.POST.dict()
+                print(request2)
+                request2["result"]= answer
+                request2["user"]= usero
+
+                print("after updating result")
+                print(request2)
+
+                form2 = heartDiseasePredictionForm(request2)
+                # print(form2)
+                form2.save()
+            else:
+                form2.save()
+                print("not logged in")
             
+            # print(form.instance.user)
+            # print(form)
+            # print("after adding user")
+            
+            # form.instance.user = request.user
+            # print(form)
+            # if request.user.is_authenticated:
+            #     print("logged in")
+            #     request2["user"]= usero.pk
+
+            #     request2 = request.POST.dict()
+            #     print(request2)
+            #     request2["result"]= answer
+            #     request2["user"]= request.user
+            #     # request2["user"]= answer
+            #     print("after updating result")
+            #     print(request2)
+                # form2 = heartDiseasePredictionForm(request2)
+                # print(form2)
+                # form2.save()
+            # else:
+            #     print("not logged in")
+
+            
+            # form2.save()
             # heartDiseasePredictionAPI(request)
             # print(ohevalue(df))
             # print(form)
-            form.save()
+            # form.save()
             # heartDiseasePrediction_data = JSONParser().parse(request)
             # heartDiseasePrediction_serializer = heartDiseasePredictionSerializers(data = heartDiseasePrediction_data)
             # if heartDiseasePrediction_serializer.is_valid():
             #     heartDiseasePrediction_serializer.save()
                 # return JsonResponse("Added Successfully", safe = False)
             # return JsonResponse("Failed to Add", safe = False)
-            
+            return render(request, "heartForm.html", context)
+    print("form is not valid")        
     form = heartDiseasePredictionForm()
 
-    return render(request, "myform/cxform.html", {"form": form})
-            
+    return render(request, "heartForm.html", {"form": form})
+
 def register(request):
     return render(request, 'register.html')
 
@@ -221,16 +291,22 @@ def logout_view(request):
     logout(request)
     return redirect('/')
 
-def index(request):
-    heartDisease = heartDiseasePrediction.objects.all()
-    form = MyForm()
+# def heartForm(request):
+#     temp={}
+#     context={"temp": temp}
+#     return render(request,"heartForm.html", context)
 
-    if request.method=="POST":
-        form = MyForm(request.POST)
-        if form.is_valid():
-            form.save()
-        messages.success(request, "Application Status: {}".format(answer))
-        # return redirect('bloglist')
-        # https://stackoverflow.com/questions/60550430/django-3-how-to-set-article-model-foreign-key-as-logged-in-user-id
 
-    return render(request, "myform/cxform.html", {"form": form})
+# def index(request):
+#     heartDisease = heartDiseasePrediction.objects.all()
+#     form = MyForm()
+
+#     if request.method=="POST":
+#         form = MyForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#         messages.success(request, "Application Status: {}".format(answer))
+#         # return redirect('bloglist')
+#         # https://stackoverflow.com/questions/60550430/django-3-how-to-set-article-model-foreign-key-as-logged-in-user-id
+
+#     return render(request, "myform/cxform.html", {"form": form})
