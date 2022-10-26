@@ -182,7 +182,7 @@ def heartForm(request):
             request2 = request.POST.dict()
             print(request2)
             request2["result"]= answer
-            form2 = heartDiseasePredictionForm(request2)
+            form = heartDiseasePredictionForm(request2)
             # try saving
             if request.user.is_authenticated:
                 print(request.user)
@@ -194,16 +194,19 @@ def heartForm(request):
                 request2 = request.POST.dict()
                 print(request2)
                 request2["result"]= answer
-                request2["user"]= usero
+                # request2["user"]= request.user
 
                 print("after updating result")
                 print(request2)
 
-                form2 = heartDiseasePredictionForm(request2)
+                form = heartDiseasePredictionForm(request2)
+                # form.instance.user = request.user
                 # print(form2)
-                form2.save()
+                form = form.save(commit=False)
+                form.user = request.user
+                form.save()
             else:
-                form2.save()
+                form.save()
                 print("not logged in")
             
             # print(form.instance.user)
@@ -283,7 +286,7 @@ def login_request(request):
             else:
                 messages.error(request,"Invalid username or password")
         else:
-                messages.error(request,"Invalid username or password")
+            messages.error(request,"Invalid username or password")
     return render(request, 'login.html',
     context={'form':AuthenticationForm()})
 
@@ -291,6 +294,28 @@ def logout_view(request):
     logout(request)
     return redirect('/')
 
+def account(request):
+    context = {}
+    if request.user.is_doctor:
+        print("this is a doctor")
+        print(request.user.email)
+        return render(request, 'account_doctor.html')
+    if request.user.is_patient:
+        print("this is a patient")
+        # print(request.user.email)
+        userForm = []
+        # print(heartDiseasePrediction.objects.all())
+        print(heartDiseasePrediction.objects.filter(user=request.user))
+
+        # for p in heartDiseasePrediction.objects.all():
+        #     print(p["user"])
+        #     if p.values_list("user") == request.user:
+        #         print("hello")
+        # print(heartDiseasePrediction.objects.all())
+        return render(request, 'account_patient.html')
+    if request.user.is_admin:
+        print("this is a admin")
+        return render(request, 'account_admin.html')
 # def heartForm(request):
 #     temp={}
 #     context={"temp": temp}

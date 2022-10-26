@@ -9,8 +9,11 @@ from django.dispatch import receiver
 class User(AbstractUser):
     is_doctor = models.BooleanField(default=False)
     is_patient = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default = False)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=20, default="0123456789")
+    email = models.CharField(max_length=100)
 
 # class User(AbstractUser):
 #     class Role(models.TextChoices):
@@ -29,19 +32,16 @@ class User(AbstractUser):
 
 class Doctor(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE, primary_key = True)
-    phone_number = models.CharField(max_length=20)
     registrationNo = models.CharField(max_length=15)
     placeOfPractice = models.CharField(max_length=15)
     university = models.CharField(max_length = 15)
 
 class Patient(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE, primary_key = True)
-    phone_number = models.CharField(max_length=20)
     connectedDoctor = models.ForeignKey(Doctor, on_delete=models.DO_NOTHING)
 
 class Admin(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE, primary_key = True)
-    phone_number = models.CharField(max_length=20)
 
 # class DoctorManager(BaseUserManager):
 #     def get_queryset(self, *args, **kwargs):

@@ -45,6 +45,7 @@ class DoctorSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     phone_number = forms.CharField(required=True)
+    email = forms.CharField(required=True)
     registrationNo = forms.CharField(required=True)
     placeOfPractice = forms.CharField(required=True)
     university = forms.CharField(required=True)
@@ -71,7 +72,29 @@ class PatientSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     phone_number = forms.CharField(required=True)
+    email = forms.CharField(required=True)
     connectedDoctor = forms.HiddenInput()
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+    
+    @transaction.atomic
+    def save(self):
+        user = super().save(commit=False)
+        user.is_patient = True
+        user.first_name = self.cleaned_data.get('first_name')
+        user.last_name = self.cleaned_data.get('last_name')
+        user.save()
+        patient = Patient.objects.create(user=user)
+        patient.phone_number=self.cleaned_data.get("phone_number")
+        patient.save()
+        return user
+
+class PatientSignUpForm(UserCreationForm):
+    first_name = forms.CharField(required=True)
+    last_name = forms.CharField(required=True)
+    phone_number = forms.CharField(required=True)
+    email = forms.CharField(required=True)
 
     class Meta(UserCreationForm.Meta):
         model = User

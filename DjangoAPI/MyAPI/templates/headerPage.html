@@ -43,7 +43,7 @@
                <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
                         {% if user.is_authenticated%}
-                        <li><a href="{% url 'heartForm' %}">Account</a> <br></li>
+                        <li><a href="{% url 'account' %}">Account</a> <br></li>
                         <li><a href="{% url 'logout' %}">Logout</a> <br></li>
                         {% else %}
                         <li><a href="{% url 'register' %}">Register</a> <br></li>

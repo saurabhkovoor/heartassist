@@ -1,0 +1,28 @@
+{% extends 'headerPage.html' %}
+{% block content%}
+<p>Patient</p>
+{{request.user.first_name.capitalize}}
+{{request.user.last_name.capitalize}}
+
+
+<h2>Profile</h2>
+<h3>Profile Details</h3>
+<p>Name</p>
+{{request.user.first_name.capitalize}}
+{{request.user.last_name.capitalize}}
+
+<h3>Contact Details</h3>
+<p>Email Address</p>
+<p>{{ request.user.email.capitalize }}</p>
+
+<p>Phone Number</p>
+<p>{{ request.user.phone_number }}</p>
+
+<h2>Heart Disease Risk Trials</h2>
+<p>{{ heartDiseasePrediction.objects.all}}</p>
+
+<h2>Connected Doctor</h2>
+
+<h2>Connect With a Doctor</h2>
+
+{% endblock %}
