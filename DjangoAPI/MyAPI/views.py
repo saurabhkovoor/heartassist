@@ -12,14 +12,15 @@ from django.http.response import JsonResponse
 from django.contrib import messages
 from rest_framework.parsers import JSONParser
 from . models import User, heartDiseasePrediction, Patient, Doctor, Admin
-from . forms import heartDiseasePredictionForm, PatientSignUpForm, DoctorSignUpForm
+from . forms import heartDiseasePredictionForm, PatientSignUpForm, DoctorSignUpForm, EditProfileForm, EditProfileForm2,ProfileUpdateForm
 from . serializers import heartDiseasePredictionSerializers
 
 from django.core.files.storage import default_storage
 
 from django.views.generic import CreateView
-from django.contrib.auth import login, logout,authenticate
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, logout,authenticate, update_session_auth_hash
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, PasswordChangeForm
+from django.contrib.auth.decorators import login_required
 
 import pickle
 import joblib
@@ -134,7 +135,7 @@ def heartForm(request):
         # print(request.POST)
         form = heartDiseasePredictionForm(request.POST)
         # print(form)
-        # print(request.POST.dict)
+        print(request.POST.dict)
         if form.is_valid():
             # id = form.cleaned_data['id']
             age = form.cleaned_data['age']
@@ -294,28 +295,108 @@ def logout_view(request):
     logout(request)
     return redirect('/')
 
+@login_required
 def account(request):
     context = {}
     if request.user.is_doctor:
         print("this is a doctor")
-        print(request.user.email)
-        return render(request, 'account_doctor.html')
-    if request.user.is_patient:
+        hasConnectedPatients = False
+        heartForms = heartDiseasePrediction.objects.filter(user=request.user).order_by("-created_at")
+        try:
+            currentDoctor = Doctor.objects.get(user = request.user)
+            connectedPatients = Patient.objects.filter(connectedDoctor=currentDoctor)
+            print(connectedPatients)
+            print("has connected patients")
+            hasConnectedPatients = True
+            context = {"connectedPatients": connectedPatients, "hasConnectedPatients": hasConnectedPatients, "heartForms": heartForms}
+            for cpat in connectedPatients:
+                print(cpat.user.first_name)
+            # return render(request, 'account_doctor.html', context)
+        except:
+            print("error")
+            context = {}
+        return render(request, 'account_doctor.html', context)
+    elif request.user.is_patient:
         print("this is a patient")
-        # print(request.user.email)
-        userForm = []
-        # print(heartDiseasePrediction.objects.all())
-        print(heartDiseasePrediction.objects.filter(user=request.user))
+        hasDoctor = False
+        for hp in heartDiseasePrediction.objects.filter(user=request.user):
+            print(hp.created_at.strftime("%d/%m/%Y, %H:%M:%S"))
+        heartForms = heartDiseasePrediction.objects.filter(user=request.user).order_by("-created_at")
+        
+        try:
+            print(Patient.objects.filter(user=request.user)[0].connectedDoctor)
+            print("has doctor")
+            hasDoctor = True
+            availableDoctors=[]
+        except:
+            availableDoctors = Doctor.objects.filter()
+            print("doesn't have doctor")
 
-        # for p in heartDiseasePrediction.objects.all():
-        #     print(p["user"])
-        #     if p.values_list("user") == request.user:
-        #         print("hello")
-        # print(heartDiseasePrediction.objects.all())
-        return render(request, 'account_patient.html')
-    if request.user.is_admin:
+        # d = Patient.objects.get(user = request.user).connectedDoctor
+        # print("email")
+        # adding doctor to patient: (not working, doesn't save to db)
+        # print(Doctor.objects.filter())
+        # for d in Doctor.objects.filter():
+        #     patient = Patient.objects.filter(user=request.user)
+        #     for p in patient:
+        #         p.connectedDoctor = d
+        #         print(p)
+        #         print(p.connectedDoctor)
+        #         p.save(["connectedDoctor"])
+        
+        #adding doctor - works
+        # p = Patient.objects.get(user = request.user)
+        # print(p)
+        # for d in Doctor.objects.filter():
+        #     p.connectedDoctor = d
+        #     print(p)
+        #     print(d)
+        #     print(p.connectedDoctor)
+        #     p.save()
+
+        if hasDoctor:
+            context = {"hasDoctor": hasDoctor, 
+            "connected_doctor":Patient.objects.get(user = request.user).connectedDoctor, 
+            "heartForms": heartForms,
+            "availableDoctors": availableDoctors}
+        else:
+            context = {"hasDoctor": hasDoctor, 
+            "heartForms": heartForms,
+            "availableDoctors": availableDoctors}
+        return render(request, 'account_patient.html', context)
+    elif request.user.is_admin:
         print("this is a admin")
         return render(request, 'account_admin.html')
+@login_required
+def edit_account(request):
+    if request.method == "POST":
+        form = EditProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect("/account/")
+
+    else:
+        form = EditProfileForm(instance=request.user)
+        args = {"form": form}
+        return render(request, "edit_account.html", args)
+@login_required
+def edit_account2(request):
+    if request.method =="POST":
+        user_form = EditProfileForm2(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, instance=request.user)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect("/account/")
+    else:
+        user_form = EditProfileForm2(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user)
+    context = {
+        "user_form":user_form,
+        "profile_form":profile_form
+    }
+    return render(request, "edit_account2.html", context)
 # def heartForm(request):
 #     temp={}
 #     context={"temp": temp}
@@ -335,3 +416,70 @@ def account(request):
 #         # https://stackoverflow.com/questions/60550430/django-3-how-to-set-article-model-foreign-key-as-logged-in-user-id
 
 #     return render(request, "myform/cxform.html", {"form": form})
+@login_required
+def change_password(request):
+    if request.method =="POST":
+        form = PasswordChangeForm(data=request.POST, user = request.user)
+
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request,form.user)
+            return redirect("/account/")
+        
+        else:
+            return redirect("/change-password/")
+
+    else:
+        form = PasswordChangeForm(user=request.user)
+        args={"form":form}
+        return render(request, "change_password.html", args)
+
+def change_connection(request, operation, pk):
+    if operation == "add":
+        #adding doctor - works
+        p = Patient.objects.get(user = request.user)
+        u = User.objects.get(pk = pk)
+        d = Doctor.objects.get(user = u)
+        p.connectedDoctor = d
+        p.save()
+        # print(p)
+        # for d in Doctor.objects.filter():
+        #     p.connectedDoctor = d
+        #     print(p)
+        #     print(d)
+        #     print(p.connectedDoctor)
+        #     p.save()
+    elif operation == "remove":
+        p = Patient.objects.get(user = request.user)
+        p.connectedDoctor = None
+        p.save()
+    elif operation == "remove-from-doctor":
+        u = User.objects.get(pk = pk)
+        p = Patient.objects.get(user = u)
+        p.connectedDoctor = None
+        p.save()
+    elif operation == "view-trials":
+        hasTrials = False
+        u = User.objects.get(pk = pk)
+        # p = Patient.objects.get(user = u)
+        heartForms = heartDiseasePrediction.objects.filter(user=request.user).order_by("-created_at")
+        heartForms2 = heartDiseasePrediction.objects.filter(user=u).order_by("-created_at")
+        print(heartForms2)
+
+        hasConnectedPatients = False
+        try:
+            currentDoctor = Doctor.objects.get(user = request.user)
+            connectedPatients = Patient.objects.filter(connectedDoctor=currentDoctor)
+            hasTrials = True
+            print(connectedPatients)
+            print("has connected patients")
+            hasConnectedPatients = True
+            context={"heartForms2": heartForms2, "hasTrials": hasTrials,"connectedPatients": connectedPatients, "hasConnectedPatients": hasConnectedPatients, "heartForms": heartForms}
+            for cpat in connectedPatients:
+                print(cpat.user.first_name)
+            # return render(request, 'account_doctor.html', context)
+        except:
+            print("error")
+            context = {}            
+        return render(request, 'account_doctor.html', context)
+    return redirect("/account/")

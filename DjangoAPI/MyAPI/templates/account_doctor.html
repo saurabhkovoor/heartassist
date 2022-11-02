@@ -5,6 +5,11 @@
 {{request.user.last_name.capitalize}}
 
 
+{%  if request.user.image.url != ""  %}
+<img src="{{ request.user.image.url }}" width = "250">
+{%  else  %}
+<img src="/media/profile_image/doctor.png" width = "250">
+{% endif %}
 <h2>Profile</h2>
 <h3>Profile Details</h3>
 <p>Name</p>
@@ -17,6 +22,8 @@
 
 <p>Phone Number</p>
 <p>{{ request.user.phone_number }}</p>
+<a href="{% url 'edit_account' %}">Edit</a>
+<a href="{% url 'change_password' %}">Change Password</a>
 
 <h3>Other Details</h3>
 <p>Registration/TPC Number</p>
@@ -26,12 +33,126 @@
 <p>University</p>
 <p>{{ request.user.university}}</p>
 
+{% if heartForms %}
 <h2>Heart Disease Risk Trials</h2>
-<p>{{ heartDiseasePrediction.objects.all}}</p>
-
+<table>
+    <thead>
+        <th>age</th>
+        <th>sex</th>
+        <th>cp</th>
+        <th>trestbps</th>
+        <th>chol</th>
+        <th>fbs</th>
+        <th>restecg</th>
+        <th>thalch</th>
+        <th>exang</th>
+        <th>oldpeak</th>
+        <th>slope</th>
+        <th>ca</th>
+        <th>thal</th>
+        <th>created_at</th>
+        <th>result</th>
+    </thead>
+    <tbody>
+        {% for hform in heartForms %}
+        <tr>
+            <td>{{hform.age}}</td>
+            <td>{{hform.sex}}</td>
+            <td>{{hform.cp}}</td>
+            <td>{{hform.trestbps}}</td>
+            <td>{{hform.chol}}</td>
+            <td>{{hform.fbs}}</td>
+            <td>{{hform.restecg}}</td>
+            <td>{{hform.thalch}}</td>
+            <td>{{hform.exang}}</td>
+            <td>{{hform.oldpeak}}</td>
+            <td>{{hform.slope}}</td>
+            <td>{{hform.ca}}</td>
+            <td>{{hform.thal}}</td>
+            <td>{{hform.created_at|date:'Y-m-d H:i'}}</td>
+            <td>{{hform.result}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% if hasConnectedPatients %}
 <h2>Connected Patients</h2>
-
-<h2>Connect With a Patient</h2>
+<table>
+    <thead>
+        <th>name</th>
+        <th>phone</th>
+        <th>email</th>
+        <th>image</th>
+        <th>action</th>
+    </thead>
+    <tbody>
+        
+        {% for cpat in connectedPatients %}
+        <p>cpat</p>
+        <tr>
+            <td>{{cpat.user.first_name}} {{cpat.user.last_name}}</td>
+            <td>{{cpat.user.phone_number}}</td>
+            <td>{{cpat.user.email}}</td>
+            {%  if cpat.user.image.url != ""  %}
+            <td><img src="{{ cpat.user.image.url }}" width = "100"></td>
+            {%  else  %}
+            <td><img src="/media/profile_image/profile.png" width = "100"></td>
+            {% endif %} 
+            <td><ul> 
+                <li><a href="{% url 'change_connection' operation='remove-from-doctor' pk=cpat.user.pk %}"> <button>Remove</button></a></li>
+                <li><a href="{% url 'change_connection' operation='view-trials' pk=cpat.user.pk %}"><button>View Trial Results</button></a></li>
+            </ul></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{%  if hasTrials  %}
+<h2>Heart Disease Risk Trials</h2>
+<table>
+<thead>
+    <th>age</th>
+    <th>sex</th>
+    <th>cp</th>
+    <th>trestbps</th>
+    <th>chol</th>
+    <th>fbs</th>
+    <th>restecg</th>
+    <th>thalch</th>
+    <th>exang</th>
+    <th>oldpeak</th>
+    <th>slope</th>
+    <th>ca</th>
+    <th>thal</th>
+    <th>created_at</th>
+    <th>result</th>
+</thead>
+<tbody>
+    {% for hform2 in heartForms2 %}
+    <tr>
+        <td>{{hform2.age}}</td>
+        <td>{{hform2.sex}}</td>
+        <td>{{hform2.cp}}</td>
+        <td>{{hform2.trestbps}}</td>
+        <td>{{hform2.chol}}</td>
+        <td>{{hform2.fbs}}</td>
+        <td>{{hform2.restecg}}</td>
+        <td>{{hform2.thalch}}</td>
+        <td>{{hform2.exang}}</td>
+        <td>{{hform2.oldpeak}}</td>
+        <td>{{hform2.slope}}</td>
+        <td>{{hform2.ca}}</td>
+        <td>{{hform2.thal}}</td>
+        <td>{{hform2.created_at|date:'Y-m-d H:i'}}</td>
+        <td>{{hform2.result}}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+{% else %}
+{% endif %}
+<!-- <h2>Connect With a Patient</h2> -->
 
 
 {% endblock %}

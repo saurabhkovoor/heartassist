@@ -6,3 +6,5 @@ admin.site.register(heartDiseasePrediction)
 admin.site.register(User)
 admin.site.register(Patient)
 admin.site.register(Doctor)
+
+admin.site.site_header = "HeartAssist Administration"

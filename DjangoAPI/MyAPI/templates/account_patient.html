@@ -4,7 +4,11 @@
 {{request.user.first_name.capitalize}}
 {{request.user.last_name.capitalize}}
 
-
+{%  if request.user.image.url != ""  %}
+<img src="{{ request.user.image.url }}" width = "250">
+{%  else  %}
+<img src="/media/profile_image/profile.png" width = "250">
+{% endif %}
 <h2>Profile</h2>
 <h3>Profile Details</h3>
 <p>Name</p>
@@ -13,16 +17,115 @@
 
 <h3>Contact Details</h3>
 <p>Email Address</p>
-<p>{{ request.user.email.capitalize }}</p>
+<p>{{ request.user.email }}</p>
 
 <p>Phone Number</p>
 <p>{{ request.user.phone_number }}</p>
+<a href="{% url 'edit_account' %}">Edit</a>
+<a href="{% url 'change_password' %}">Change Password</a>
 
+{% if heartForms %}
 <h2>Heart Disease Risk Trials</h2>
-<p>{{ heartDiseasePrediction.objects.all}}</p>
+<table>
+<thead>
+    <th>age</th>
+    <th>sex</th>
+    <th>cp</th>
+    <th>trestbps</th>
+    <th>chol</th>
+    <th>fbs</th>
+    <th>restecg</th>
+    <th>thalch</th>
+    <th>exang</th>
+    <th>oldpeak</th>
+    <th>slope</th>
+    <th>ca</th>
+    <th>thal</th>
+    <th>created_at</th>
+    <th>result</th>
+</thead>
+<tbody>
+    {% for hform in heartForms %}
+    <tr>
+        <td>{{hform.age}}</td>
+        <td>{{hform.sex}}</td>
+        <td>{{hform.cp}}</td>
+        <td>{{hform.trestbps}}</td>
+        <td>{{hform.chol}}</td>
+        <td>{{hform.fbs}}</td>
+        <td>{{hform.restecg}}</td>
+        <td>{{hform.thalch}}</td>
+        <td>{{hform.exang}}</td>
+        <td>{{hform.oldpeak}}</td>
+        <td>{{hform.slope}}</td>
+        <td>{{hform.ca}}</td>
+        <td>{{hform.thal}}</td>
+        <td>{{hform.created_at|date:'Y-m-d H:i'}}</td>
+        <td>{{hform.result}}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+{% endif %}
 
+{%  if hasDoctor  %}
 <h2>Connected Doctor</h2>
+<table>
+    <thead>
+        <th>name</th>
+        <th>registrationNo</th>
+        <th>placeOfPractice</th>
+        <th>university</th>
+        <th>phone</th>
+        <th>email</th>
+        <th>image</th>
+        <th>action</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Dr. {{connected_doctor.user.first_name}} {{connected_doctor.user.last_name}}</td>
+            <td>{{connected_doctor.registrationNo}}</td>
+            <td>{{connected_doctor.placeOfPractice}}</td>
+            <td>{{connected_doctor.university}}</td>
+            <td>{{connected_doctor.user.email}}</td>
+            <td>{{connected_doctor.user.phone_number}}</td>
+            {%  if connected_doctor.user.image.url != ""  %}
+            <td><img src="{{ connected_doctor.user.image.url }}" width = "100"></td>
+            {%  else  %}
+            <td><img src="/media/profile_image/doctor.png" width = "100"></td>
+            {% endif %} 
+            <td> <a href="{% url 'change_connection' operation='remove' pk=connected_doctor.user.pk %}"> <button>Remove</button></a></td>           
+        </tr>
+    </tbody>
+</table>
 
+{%  else  %}
 <h2>Connect With a Doctor</h2>
-
+<table>
+    <thead>
+        <th>name</th>
+        <th>registrationNo</th>
+        <th>placeOfPractice</th>
+        <th>university</th>
+        <th>image</th>
+        <th>action</th>
+    </thead>
+    <tbody>
+        {% for doc in availableDoctors %}
+        <tr>
+            <td>{{doc.user.first_name}} {{doc.user.last_name}}</td>
+            <td>{{doc.registrationNo}}</td>
+            <td>{{doc.placeOfPractice}}</td>
+            <td>{{doc.university}}</td>
+            {%  if doc.user.image.url != ""  %}
+            <td><img src="{{ doc.user.image.url }}" width = "100"></td>
+            {%  else  %}
+            <td><img src="/media/profile_image/doctor.png" width = "100"></td>
+            {% endif %} 
+            <td> <a href="{% url 'change_connection' operation='add' pk=doc.user.pk %}"> <button>Connect</button></a></td>           
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
 {% endblock %}

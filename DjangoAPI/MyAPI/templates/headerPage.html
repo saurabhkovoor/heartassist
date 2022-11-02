@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html data-theme="night" lang="en">
 <head>
 
      <title>Heart Disease Prediction Calculator</title>
@@ -11,11 +11,14 @@
      <meta name="keywords" content="">
      <meta name="author" content="Tooplate">
      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" >
+     <!-- <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" >
      <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}" >
      <link rel="stylesheet" href="{% static 'css/animate.css' %}" >
      <link rel="stylesheet" href="{% static 'css/owl.carousel.css' %}" >
-     <link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}" >
+     <link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}" > -->
+     <!-- <link rel="stylesheet" href="{% static 'css/main.min.css' %}"> -->
+     <link href="https://cdn.jsdelivr.net/npm/daisyui@2.36.1/dist/full.css" rel="stylesheet" type="text/css" />
+     <script src="https://cdn.tailwindcss.com"></script>
 
      <!-- MAIN CSS -->
 
@@ -43,7 +46,7 @@
                <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
                         {% if user.is_authenticated%}
-                        <li><a href="{% url 'account' %}">Account</a> <br></li>
+                        <li><a href="{% url 'account' %}">{{ request.user.username.capitalize }}</a> <br></li>
                         <li><a href="{% url 'logout' %}">Logout</a> <br></li>
                         {% else %}
                         <li><a href="{% url 'register' %}">Register</a> <br></li>

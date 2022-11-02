@@ -1,0 +1,11 @@
+{% extends 'headerPage.html' %}
+{% block content%}
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        {{user_form | linebreaks}}
+        {{profile_form | linebreaks}}
+        <button type="submit"> Submit</button>
+    </form>
+</div>
+{% endblock %}

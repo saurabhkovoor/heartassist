@@ -13,7 +13,8 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=20, default="0123456789")
-    email = models.CharField(max_length=100)
+    image = models.ImageField(upload_to="profile_image", blank=True, default="profile_image/profile.png")
+    # email = models.CharField(max_length=100)
 
 # class User(AbstractUser):
 #     class Role(models.TextChoices):
@@ -166,10 +167,10 @@ class heartDiseasePrediction(models.Model):
     ca = models.CharField(max_length=15, choices=CA_CHOICES)
     thal = models.CharField(max_length=30, choices=THAL_CHOICES)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default= None, blank = True)
-    created_at = models.DateTimeField('%m/%d/%Y %H:%M:%S', auto_now_add=True)
+    created_at = models.DateTimeField('%d/%m/%Y %H:%M', auto_now_add=True)
     result = models.IntegerField(default=0)
-    def __str__(self):
-        return "{}, {}".format(self.id, self.age)
+    # def __str__(self):
+    #     return "{}, {}".format(self.id, self.age)
 
 # class AdminManager(BaseUserManager):
 #     def get_queryset(self, *args, **kwargs):

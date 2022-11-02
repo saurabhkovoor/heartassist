@@ -1,5 +1,6 @@
 {% extends 'headerPage.html' %}
 {% block content%}
+{% load widget_tweaks %}
 <h1>Heart Disease Risk Calculator</h1>
 <p>Powered by the best performing machine learning model designed and
     developed after performing extensive comparative tests, this calculator
@@ -19,9 +20,21 @@
     in to your patient account.  
 </p>
 <form method='post'>
-    {% csrf_token %}
+    
     <p>Enter the patient's information below:</p>
-    {{form|linebreaks}}
+    <!-- {{form|linebreaks}} -->
+    {% csrf_token %}
+    {% for field in form %}
+            {% if field == form.user or field == form.result %}
+            {% render_field field style="visibility:hidden;" %}
+            {% else %}
+            {{ field.label_tag }}
+            {% render_field field class="form-control" %}
+                {% for error in field.errors %}
+                    <span style="color:red">{{ error }}</span>
+                {% endfor %}
+            {% endif %}
+    {% endfor %}
     <button type='submit'>Submit</button>
     <button type='reset'>Reset</button>
 </form>
@@ -66,7 +79,17 @@
 <button onclick="window.print();return false;" >Print</button>
 <button onclick="window.location.href=window.location.href">Retry</button>
 
-
+{% if not user.is_authenticated%}
+<div>
+    <h2>What next?</h2>
+    <p>You can save your results to the system and
+        contact a doctor, by signing up for a patient
+        account. </p>
+        
+        <p>Click <b><a href= "{% url 'patient_register' %}">here</a></b> to register for a patient account or click <b><a href= "{% url 'login' %}">here</a></b> to log in.</p>
+</div>
+{% else %}
+{% endif %}
  <h3>If the response is good. Do you weant to save it in DB?
  </h3>
  <input type="hidden" id="lname" name="mpgVal" value={{answer}}>
