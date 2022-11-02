@@ -12,6 +12,12 @@
         "config": {
           "distDir": "staticfiles_build"
         }
+      },{
+        "functions": {
+          "api/**/*.py": {
+            "excludeFiles": "**/*.html"
+          }
+        }
       }
     ],
     "routes": [
@@ -22,6 +28,13 @@
       {
         "src": "/(.*)",
         "dest": "DjangoAPI/wsgi.py"
+      },
+      {
+        "functions": {
+          "api/**/*.py": {
+            "excludeFiles": "**/*.html"
+          }
+        }
       }
     ]
   }
