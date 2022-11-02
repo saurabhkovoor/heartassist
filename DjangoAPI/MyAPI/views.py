@@ -28,7 +28,7 @@ import json
 import numpy as np
 # from sklearn import preprocessing
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
+# from sklearn.preprocessing import MinMaxScaler
 from collections import defaultdict, Counter
 
 from django.contrib.auth.decorators import login_required

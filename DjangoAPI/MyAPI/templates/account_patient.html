@@ -1,29 +1,40 @@
 {% extends 'headerPage.html' %}
 {% block content%}
-<p>Patient</p>
-{{request.user.first_name.capitalize}}
-{{request.user.last_name.capitalize}}
 
-{%  if request.user.image.url != ""  %}
-<img src="{{ request.user.image.url }}" width = "250">
-{%  else  %}
-<img src="/media/profile_image/profile.png" width = "250">
-{% endif %}
-<h2>Profile</h2>
-<h3>Profile Details</h3>
-<p>Name</p>
-{{request.user.first_name.capitalize}}
-{{request.user.last_name.capitalize}}
+<div class="flex flex-row justify-center">
+    <div class="avatar mr-5">
+        <div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+            {%  if request.user.image.url != ""  %}
+            <img src="{{ request.user.image.url }}" width = "250">
+            {%  else  %}
+            <img src="/media/profile_image/profile.png" width = "250">
+            {% endif %}
+        </div>
+    </div>
+    <div class="ml-5">
+        <p>Patient</p>
+        <p class="text-xl font-bold">{{request.user.first_name.capitalize}} {{request.user.last_name.capitalize}}</p>
+        <a href="{% url 'edit_account' %}"><button class="btn btn-active btn-primary">Edit Profile Details</button></a>
+        <a href="{% url 'change_password' %}"><button class="btn btn-active btn-primary">Change Password</button></a>
+    </div>
+</div>
+<div class="flex flex-row justify-center mt-10 mb-10">
+    <div>
+        <h3 class="text-xl font-bold">Profile Details</h3>
+        <p>Name</p>
+        {{request.user.first_name.capitalize}}
+        {{request.user.last_name.capitalize}}
+    </div>
+    <div class="ml-20">
+        <h3 class="text-xl font-bold">Contact Details</h3>
+        <p>Email Address</p>
+        <p>{{ request.user.email }}</p>
 
-<h3>Contact Details</h3>
-<p>Email Address</p>
-<p>{{ request.user.email }}</p>
-
-<p>Phone Number</p>
-<p>{{ request.user.phone_number }}</p>
-<a href="{% url 'edit_account' %}">Edit</a>
-<a href="{% url 'change_password' %}">Change Password</a>
-
+        <p>Phone Number</p>
+        <p>{{ request.user.phone_number }}</p>
+    </div>
+</div>
+<p>hello</p>
 {% if heartForms %}
 <h2>Heart Disease Risk Trials</h2>
 <table>
