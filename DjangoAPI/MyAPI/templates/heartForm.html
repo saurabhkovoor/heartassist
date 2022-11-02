@@ -1,102 +1,163 @@
 {% extends 'headerPage.html' %}
 {% block content%}
 {% load widget_tweaks %}
-<h1>Heart Disease Risk Calculator</h1>
+<div class="hero min-h-screen w-screen" style="background-image: url(/media/profile_image/heartbg.jpg);">
+  <div class="hero-overlay bg-opacity-70"></div>
+  <div class="hero-content text-center text-neutral-content">
+    <div class="max-w-md">
+      <h1 class="mb-5 text-5xl font-bold">Heart Disease Risk Calculator</h1>
+      <p class="mb-5">Powered by the best performing machine learning model designed and
+        developed after performing extensive comparative tests, this calculator
+        predicts the likelihood of you developing cardiovascular diseases or heart
+        diseases over the next 10 years. <br>It requires some physiological data inputs
+        which are potential risk factors to calculator your risk. So, be sure to enter
+        your most recent values.</p>
+        <!-- <a href="#heartCalc"><button class="btn btn-primary">Start Calculating</button></a> -->
+    </div>
+  </div>
+</div>
+<div class="grid place-items-center">
+<article class="prose">
+<!-- <h1>Heart Disease Risk Calculator</h1>
 <p>Powered by the best performing machine learning model designed and
     developed after performing extensive comparative tests, this calculator
     predicts the likelihood of you developing cardiovascular diseases or heart
     diseases over the next 10 years. It requires some physiological data inputs
     which are potential risk factors to calculator your risk. So, be sure to enter
-    your most recent values.
-    For more information about this calculator, visit the About page, by clicking
-    here.</p>
-<p>
+    your most recent values.</p> -->
+<h3 id="heartCalc">
     Notes:
-    - You can consult with a doctor to assist in understanding your personal risk and interpreting these
-    results.
-    • The calculator may overestimate or underestimate your risk, hence, it cannot classify for certain
-    100% whether you will have a cardiovascular event.
-    -You can save your records to the system for future viewing or comparisons, by signing up or logging
-    in to your patient account.  
-</p>
-<form method='post'>
-    
-    <p>Enter the patient's information below:</p>
+</h3>
+<ul>
+    <li>You can consult with a doctor to assist in understanding your personal risk and interpreting these
+        results.</li>
+        <li>The calculator may overestimate or underestimate your risk, hence, it cannot classify for certain
+            100% whether you will have a cardiovascular event.</li>
+        <li>You can save your records to the system for future viewing or comparisons, by signing up or logging
+            in to your patient account.</li>
+</ul>
+
+<h3>Enter the patient's information below:</h3>
+</article>
+<form method='post' class="prose">
     <!-- {{form|linebreaks}} -->
     {% csrf_token %}
     {% for field in form %}
             {% if field == form.user or field == form.result %}
             {% render_field field style="visibility:hidden;" %}
             {% else %}
-            {{ field.label_tag }}
-            {% render_field field class="form-control" %}
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-10 mb-5"> {{ field.label_tag }} </label>
+            <!-- {{ field.label_tag }} -->
+            {% render_field field class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-10 leading-tight focus:outline-none focus:bg-white" %}
                 {% for error in field.errors %}
                     <span style="color:red">{{ error }}</span>
                 {% endfor %}
             {% endif %}
     {% endfor %}
-    <button type='submit'>Submit</button>
-    <button type='reset'>Reset</button>
+    
+    <div style="text-align: center; padding-bottom:30px;">
+    <button class="btn btn-active btn-primary" type='submit'>Submit</button>
+    <button class="btn btn-active btn-primary" type='reset'>Reset</button>
+    </div>
 </form>
-{% if messages %}
+<!-- {% if messages %}
 <ul class="messages">
 {% for message in messages %}
 <li {% if message.tags %} class=" {{ message.tags }} " {% endif %}>
 {{ message }} </li>
 {% endfor %}
 </ul>
-{% endif %}
+{% endif %} -->
 
  {%  if answer >= 0  %}
- <h1>Results, Your Heart Disease Risk Level is <br>{{answer}} out of 4</h1>
- 
- {%  if answer == 0 %}
- <p> Meaning you are at little to no risk</p>
- {% endif %}
- {%  if answer == 1 %}
- <p> Meaning there is risk, but at a low rate</p>
- {% endif %}
- {%  if answer == 2 %}
- <p> Meaning you have intermediate level of risk to obtain heart disease</p>
- {% endif %}
- {%  if answer == 3 %}
- <p> Meaning you are relatively high risk</p>
- {% endif %}
- {%  if answer == 4 %}
- <p> Meaning you are at very high risk</p>
- {% endif %}
+ <div class="card w-96 bg-base-100 shadow-xl text-center mb-5">
+    <div class="card-body">
+      <h2 class="card-title">Results, Your Heart Disease Risk Level is</h2>
+      <div class="stat-value text-primary">{{answer}} out of 4</div>
+      {%  if answer == 0 %}
+    <p> Meaning you are at little to no risk</p>
+    {% endif %}
+    {%  if answer == 1 %}
+    <p> Meaning there is risk, but at a low rate</p>
+    {% endif %}
+    {%  if answer == 2 %}
+    <p> Meaning you have intermediate level of risk to obtain heart disease</p>
+    {% endif %}
+    {%  if answer == 3 %}
+    <p> Meaning you are at relatively high risk</p>
+    {% endif %}
+    {%  if answer == 4 %}
+    <p> Meaning you are at very high risk</p>
+    {% endif %}
+    </div>
+  </div>
+  
+ <!-- {%  if answer > 0 %}  
+  <div class="card w-96 bg-base-100 shadow-xl text-center mb-5">
+    <div class="card-body">
+      <h2 class="card-title">Additional Info</h2>
+      <p>*General statement describing user's risk, and
+        factors contributing to risk*</p>
+    {% if addd%}
+    <h3 class="card-title">Potential Factors</h3>
+    {%  if "age" in addd  %}
+    <p> You're old</p>
+    {% endif %}
+    {% endif %}
+    </div>
+  </div>
+{% endif %} -->
 
- {%  if answer > 0 %}  
- <h2>Additional Info</h2>
- <p>*General statement describing user's risk, and
-    factors contributing to risk*</p>
-
-
-{%  if "age" in addd  %}
-<p> You're old</p>
+{%  if answer > 0 %}  
+<div class="card w-96 bg-base-100 shadow-xl text-center mb-5">
+  <div class="card-body">
+    <h2 class="card-title">Additional Info</h2>
+    {% if addd%}
+    <div class="collapse">
+    <input type="checkbox" class="peer" /> 
+        <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
+        Click me to show potential factors
+        <h3 class="card-title">Potential Factors</h3>
+        </div> 
+        <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content"> 
+            {%  if "age" in addd  %}
+            <p> You're old</p>
+            {% endif %}
+            
+        </div>
+    </div>
+    {%else%}
+        <p>No Additional info available</p>
+    {% endif %}
+  </div>
+</div>
 {% endif %}
-{% endif %}
-<button onclick="window.print();return false;" >Print</button>
-<button onclick="window.location.href=window.location.href">Retry</button>
+
+<div class="btn-group prose">
+<button class="btn btn-primary " onclick="window.print();return false;" >Print</button>
+<button class="btn btn-info" onclick="window.location.href=window.location.href">Retry</button>
+</div>
+
 
 {% if not user.is_authenticated%}
-<div>
-    <h2>What next?</h2>
-    <p>You can save your results to the system and
+<div class="card w-96 bg-base-100 shadow-xl text-center mb-5">
+    <div class="card-body">
+      <h2 class="card-title">What next? Log In to Save Results.</h2>
+      <p>You can save your results to the system and
         contact a doctor, by signing up for a patient
-        account. </p>
-        
+        account.</p>
         <p>Click <b><a href= "{% url 'patient_register' %}">here</a></b> to register for a patient account or click <b><a href= "{% url 'login' %}">here</a></b> to log in.</p>
+        <div class="btn-group justify-center">
+            <a style="text-decoration:none;" class="mr-1" href= "{% url 'patient_register' %}"><button class="btn btn-primary ">Register</button></a>
+            <a style="text-decoration:none;" class="ml-1" href= "{% url 'login' %}"><button class="btn btn-info">Log In</button></a>
+        </div>
+    </div>
 </div>
 {% else %}
 {% endif %}
- <h3>If the response is good. Do you weant to save it in DB?
- </h3>
- <input type="hidden" id="lname" name="mpgVal" value={{answer}}>
- <input type="submit" value="Submit" ></div>
  {% else%}
  <!-- <input type="submit" value="Submit" ></div> -->
  {% endif %}
-
+</div>
 
 {% endblock %}
