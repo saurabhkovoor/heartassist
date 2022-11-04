@@ -12,7 +12,7 @@ from django.http.response import JsonResponse
 from django.contrib import messages
 from rest_framework.parsers import JSONParser
 from . models import User, heartDiseasePrediction, Patient, Doctor, Admin
-from . forms import heartDiseasePredictionForm, PatientSignUpForm, DoctorSignUpForm, EditProfileForm, EditProfileForm2,ProfileUpdateForm
+from . forms import heartDiseasePredictionForm, PatientSignUpForm, DoctorSignUpForm, EditProfileForm,ProfileUpdateForm
 from . serializers import heartDiseasePredictionSerializers
 
 from django.core.files.storage import default_storage
@@ -367,22 +367,23 @@ def account(request):
     elif request.user.is_admin:
         print("this is a admin")
         return render(request, 'account_admin.html')
+# @login_required
+# def edit_account(request):
+#     if request.method == "POST":
+#         form = EditProfileForm(request.POST, instance=request.user)
+#         if form.is_valid():
+#             form.save()
+#             return redirect("/account/")
+
+#     else:
+#         form = EditProfileForm(instance=request.user)
+#         args = {"form": form}
+#         return render(request, "edit_account.html", args)
+
 @login_required
 def edit_account(request):
-    if request.method == "POST":
-        form = EditProfileForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect("/account/")
-
-    else:
-        form = EditProfileForm(instance=request.user)
-        args = {"form": form}
-        return render(request, "edit_account.html", args)
-@login_required
-def edit_account2(request):
     if request.method =="POST":
-        user_form = EditProfileForm2(request.POST, instance=request.user)
+        user_form = EditProfileForm(request.POST, instance=request.user)
         # profile_form = ProfileUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
 
@@ -391,13 +392,13 @@ def edit_account2(request):
             profile_form.save()
             return redirect("/account/")
     else:
-        user_form = EditProfileForm2(instance=request.user)
+        user_form = EditProfileForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=request.user)
     context = {
         "user_form":user_form,
         "profile_form":profile_form
     }
-    return render(request, "edit_account2.html", context)
+    return render(request, "edit_account.html", context)
 # def heartForm(request):
 #     temp={}
 #     context={"temp": temp}

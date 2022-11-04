@@ -119,17 +119,17 @@ class PatientSignUpForm(UserCreationForm):
 #         patient.save()
 #         return user
 
-class EditProfileForm(UserChangeForm):
-    class Meta:
-        model = models.User
-        fields = (
-            "email",
-            "first_name",
-            "last_name"
-        )
-        exclude=()
+# class EditProfileForm(UserChangeForm):
+#     class Meta:
+#         model = models.User
+#         fields = (
+#             "email",
+#             "first_name",
+#             "last_name"
+#         )
+#         exclude=()
 
-class EditProfileForm2(forms.ModelForm):
+class EditProfileForm(forms.ModelForm):
     class Meta:
         model = models.User
         fields = ["username","email", "first_name", "last_name"]

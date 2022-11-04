@@ -13,7 +13,7 @@
     </div>
     <div class="ml-5">
         <p>Doctor</p>
-        <p class="text-xl font-bold">{{request.user.first_name.capitalize}} {{request.user.last_name.capitalize}}</p>
+        <p class="text-xl font-bold">Dr. {{request.user.first_name.capitalize}} {{request.user.last_name.capitalize}}</p>
         <a href="{% url 'edit_account' %}"><button class="btn btn-active btn-primary text-white">Edit Profile Details</button></a>
         <a href="{% url 'change_password' %}"><button class="btn btn-active btn-primary text-white mt-2">Change Password</button></a>
     </div>
@@ -22,8 +22,7 @@
     <div>
         <h3 class="text-xl font-bold mt-5">Profile Details</h3>
         <p class="mt-5">Name</p>
-        <p class="text-primary font-bold">{{request.user.first_name.capitalize}}
-        {{request.user.last_name.capitalize}}</p>
+        <p class="text-primary font-bold">Dr. {{request.user.first_name.capitalize}} {{request.user.last_name.capitalize}}</p>
     </div>
     <div class="ml-10">
         <h3 class="text-xl font-bold mt-5">Contact Details</h3>
@@ -45,23 +44,6 @@
         <p class="text-primary font-bold">{{ currentDoctor.university}}</p>
     </div>
 </div>
-<!-- <div style="flex-wrap: wrap;" class="flex flex-row px-1 justify-center mt-10 mb-10">
-    <div>
-        <h3 class="text-xl font-bold">Other Details</h3>
-        <p class="mt-4">Registration/TPC Number</p>
-        <p class="text-primary font-bold">{{ currentDoctor.registrationNo}}</p>
-    </div>
-    <div style="margin-left: 30px; margin-right: 30px;">
-        <h3>&nbsp;</h3>
-        <p class="mt-5">Place of Practice</p>
-        <p class="text-primary font-bold">{{ currentDoctor.placeOfPractice}}</p>
-    </div>
-    <div>
-        <h3>&nbsp;</h3>
-        <p class="mt-5">University</p>
-        <p class="text-primary font-bold">{{ currentDoctor.university}}</p>
-    </div>
-</div> -->
 
 {% if heartForms %}
 <div class="overflow-x-auto" style="max-width:70%;margin:auto;margin-bottom:40px;">
@@ -129,9 +111,13 @@
             <td>{{cpat.user.phone_number}}</td>
             <td>{{cpat.user.email}}</td>
             {%  if cpat.user.image.url != ""  %}
-            <td><img src="{{ cpat.user.image.url }}" width = "100"></td>
+            <td style="text-align: -webkit-center;"><div class="w-24 mask mask-squircle">
+                <img src="{{ cpat.user.image.url }}"/>
+            </div></td>
             {%  else  %}
-            <td><img src="/media/profile_image/profile.png" width = "100"></td>
+            <td style="text-align: -webkit-center;"><div class="w-24 mask mask-squircle">
+                <img src="/media/profile_image/profile.png"/>
+            </div></td>
             {% endif %} 
             <td><ul> 
                 <li><a href="{% url 'change_connection' operation='remove-from-doctor' pk=cpat.user.pk %}"> <button class="btn btn-primary text-white">Remove</button></a></li>

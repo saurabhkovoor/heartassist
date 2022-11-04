@@ -107,9 +107,17 @@
             <td>{{connected_doctor.user.phone_number}}</td>
             <td>{{connected_doctor.user.email}}</td>
             {%  if connected_doctor.user.image.url != ""  %}
-            <td><img src="{{ connected_doctor.user.image.url }}" width = "100"></td>
+            <td style="text-align: -webkit-center;">
+                <div class="w-24 mask mask-squircle">
+                    <img src="{{ connected_doctor.user.image.url }}"/>
+                </div>
+            </td>
             {%  else  %}
-            <td><img src="/media/profile_image/doctor.png" width = "100"></td>
+            <td style="text-align: -webkit-center;">
+                <div class="w-24 mask mask-squircle">
+                    <img src="/media/profile_image/doctor.png"/>
+                </div>
+            </td>
             {% endif %} 
             <td> <a href="{% url 'change_connection' operation='remove' pk=connected_doctor.user.pk %}"> <button class="btn btn-primary text-white">Remove</button></a></td>           
         </tr>
@@ -133,15 +141,23 @@
     <tbody>
         {% for doc in availableDoctors %}
         <tr class="hover">
-            <td>{{doc.user.first_name}} {{doc.user.last_name}}</td>
+            <td>Dr. {{doc.user.first_name}} {{doc.user.last_name}}</td>
             <td>{{doc.user.username}}</td>
             <td>{{doc.registrationNo}}</td>
             <td>{{doc.placeOfPractice}}</td>
             <td>{{doc.university}}</td>
             {%  if doc.user.image.url != ""  %}
-            <td><img src="{{ doc.user.image.url }}" width = "100"></td>
+            <td style="text-align: -webkit-center;">
+                <div class="w-24 mask mask-squircle">
+                    <img src="{{ doc.user.image.url }}"/>
+                </div>
+            </td>
             {%  else  %}
-            <td><img src="/media/profile_image/doctor.png" width = "100"></td>
+            <td style="text-align: -webkit-center;">
+                <div class="w-24 mask mask-squircle">
+                    <img src="/media/profile_image/doctor.png"/>
+                </div>
+            </td>
             {% endif %} 
             <td> <a href="{% url 'change_connection' operation='add' pk=doc.user.pk %}"> <button class="btn btn-primary text-white">Connect</button></a></td>           
         </tr>
