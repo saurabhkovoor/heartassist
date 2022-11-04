@@ -18,14 +18,7 @@
 </div>
 <div class="grid place-items-center">
 <article class="prose">
-<!-- <h1>Heart Disease Risk Calculator</h1>
-<p>Powered by the best performing machine learning model designed and
-    developed after performing extensive comparative tests, this calculator
-    predicts the likelihood of you developing cardiovascular diseases or heart
-    diseases over the next 10 years. It requires some physiological data inputs
-    which are potential risk factors to calculator your risk. So, be sure to enter
-    your most recent values.</p> -->
-<h3 id="heartCalc">
+<h3 id="heartCalc" class="pt-5">
     Notes:
 </h3>
 <ul>
@@ -56,8 +49,8 @@
     {% endfor %}
     
     <div style="text-align: center; padding-bottom:30px;">
-    <button class="btn btn-active btn-primary" type='submit'>Submit</button>
-    <button class="btn btn-active btn-primary" type='reset'>Reset</button>
+    <button class="btn btn-active btn-primary text-white" type='submit'>Submit</button>
+    <button class="btn btn-active btn-primary text-white" type='reset'>Reset</button>
     </div>
 </form>
 <!-- {% if messages %}
@@ -134,8 +127,8 @@
 {% endif %}
 
 <div class="btn-group prose">
-<button class="btn btn-primary " onclick="window.print();return false;" >Print</button>
-<button class="btn btn-info" onclick="window.location.href=window.location.href">Retry</button>
+<button class="btn btn-primary text-white" onclick="window.print();return false;" >Print</button>
+<button class="btn btn-info text-white" onclick="window.location.href=window.location.href">Retry</button>
 </div>
 
 
@@ -148,8 +141,8 @@
         account.</p>
         <p>Click <b><a href= "{% url 'patient_register' %}">here</a></b> to register for a patient account or click <b><a href= "{% url 'login' %}">here</a></b> to log in.</p>
         <div class="btn-group justify-center">
-            <a style="text-decoration:none;" class="mr-1" href= "{% url 'patient_register' %}"><button class="btn btn-primary ">Register</button></a>
-            <a style="text-decoration:none;" class="ml-1" href= "{% url 'login' %}"><button class="btn btn-info">Log In</button></a>
+            <a style="text-decoration:none;" class="mr-1" href= "{% url 'patient_register' %}"><button class="btn btn-primary text-white">Register</button></a>
+            <a style="text-decoration:none;" class="ml-1" href= "{% url 'login' %}"><button class="btn btn-info text-white">Log In</button></a>
         </div>
     </div>
 </div>

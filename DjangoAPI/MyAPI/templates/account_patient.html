@@ -1,7 +1,7 @@
 {% extends 'headerPage.html' %}
 {% block content%}
 
-<div class="flex flex-row justify-center">
+<div class="container flex justify-center md:flex-row items-center px-6 mx-auto space-y-0 mt-10">
     <div class="avatar mr-5">
         <div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
             {%  if request.user.image.url != ""  %}
@@ -14,32 +14,34 @@
     <div class="ml-5">
         <p>Patient</p>
         <p class="text-xl font-bold">{{request.user.first_name.capitalize}} {{request.user.last_name.capitalize}}</p>
-        <a href="{% url 'edit_account' %}"><button class="btn btn-active btn-primary">Edit Profile Details</button></a>
-        <a href="{% url 'change_password' %}"><button class="btn btn-active btn-primary">Change Password</button></a>
+        <a href="{% url 'edit_account' %}"><button class="btn btn-active btn-primary text-white">Edit Profile Details</button></a>
+        <a href="{% url 'change_password' %}"><button class="btn btn-active btn-primary text-white mt-2">Change Password</button></a>
     </div>
 </div>
-<div class="flex flex-row justify-center mt-10 mb-10">
+<div class="flex flex-row px-1 justify-center mt-10 mb-10">
     <div>
         <h3 class="text-xl font-bold">Profile Details</h3>
-        <p>Name</p>
-        {{request.user.first_name.capitalize}}
-        {{request.user.last_name.capitalize}}
+        <p class="mt-5">Name</p>
+        <p class="text-primary font-bold">{{request.user.first_name.capitalize}}
+        {{request.user.last_name.capitalize}}</p>
     </div>
-    <div class="ml-20">
+    <div class="ml-10">
         <h3 class="text-xl font-bold">Contact Details</h3>
-        <p>Email Address</p>
-        <p>{{ request.user.email }}</p>
+        <p class="mt-5">Email Address</p>
+        <p class="text-primary font-bold">{{ request.user.email }}</p>
 
-        <p>Phone Number</p>
-        <p>{{ request.user.phone_number }}</p>
+        <p class="mt-5">Phone Number</p>
+        <p class="text-primary font-bold">{{ request.user.phone_number }}</p>
     </div>
 </div>
-<p>hello</p>
+
 {% if heartForms %}
-<h2>Heart Disease Risk Trials</h2>
-<table>
+
+<div class="overflow-x-auto" style="max-width:70%;margin:auto;">
+<h2 class="text-xl font-bold text-primary mt-5 mb-5">Heart Disease Risk Trials</h2>
+<table class="table w-full text-center">
 <thead>
-    <th>age</th>
+    <th style="position:inherit">age</th>
     <th>sex</th>
     <th>cp</th>
     <th>trestbps</th>
@@ -57,7 +59,7 @@
 </thead>
 <tbody>
     {% for hform in heartForms %}
-    <tr>
+    <tr class="hover">
         <td>{{hform.age}}</td>
         <td>{{hform.sex}}</td>
         <td>{{hform.cp}}</td>
@@ -77,13 +79,16 @@
     {% endfor %}
 </tbody>
 </table>
+</div>
 {% endif %}
 
 {%  if hasDoctor  %}
-<h2>Connected Doctor</h2>
-<table>
+<div class="overflow-x-auto" style="max-width:70%;margin:auto;margin-bottom: 40px;">
+<h2 class="text-xl font-bold text-primary mt-5 mb-5">Connected Doctor</h2>
+<table class="table w-full text-center">
     <thead>
-        <th>name</th>
+        <th style="position:inherit">name</th>
+        <th>username</th>
         <th>registrationNo</th>
         <th>placeOfPractice</th>
         <th>university</th>
@@ -93,28 +98,32 @@
         <th>action</th>
     </thead>
     <tbody>
-        <tr>
+        <tr class="hover">
             <td>Dr. {{connected_doctor.user.first_name}} {{connected_doctor.user.last_name}}</td>
+            <td>{{connected_doctor.user.username}}</td>
             <td>{{connected_doctor.registrationNo}}</td>
             <td>{{connected_doctor.placeOfPractice}}</td>
             <td>{{connected_doctor.university}}</td>
-            <td>{{connected_doctor.user.email}}</td>
             <td>{{connected_doctor.user.phone_number}}</td>
+            <td>{{connected_doctor.user.email}}</td>
             {%  if connected_doctor.user.image.url != ""  %}
             <td><img src="{{ connected_doctor.user.image.url }}" width = "100"></td>
             {%  else  %}
             <td><img src="/media/profile_image/doctor.png" width = "100"></td>
             {% endif %} 
-            <td> <a href="{% url 'change_connection' operation='remove' pk=connected_doctor.user.pk %}"> <button>Remove</button></a></td>           
+            <td> <a href="{% url 'change_connection' operation='remove' pk=connected_doctor.user.pk %}"> <button class="btn btn-primary text-white">Remove</button></a></td>           
         </tr>
     </tbody>
 </table>
-
+</div>
 {%  else  %}
-<h2>Connect With a Doctor</h2>
-<table>
+
+<div class="overflow-x-auto" style="max-width:70%;margin:auto;margin-bottom: 40px;">
+<h2 class="text-xl font-bold text-primary mt-5 mb-5">Connect With a Doctor</h2>
+<table class="table w-full text-center">
     <thead>
-        <th>name</th>
+        <th style="position:inherit">name</th>
+        <th>username</th>
         <th>registrationNo</th>
         <th>placeOfPractice</th>
         <th>university</th>
@@ -123,8 +132,9 @@
     </thead>
     <tbody>
         {% for doc in availableDoctors %}
-        <tr>
+        <tr class="hover">
             <td>{{doc.user.first_name}} {{doc.user.last_name}}</td>
+            <td>{{doc.user.username}}</td>
             <td>{{doc.registrationNo}}</td>
             <td>{{doc.placeOfPractice}}</td>
             <td>{{doc.university}}</td>
@@ -133,10 +143,11 @@
             {%  else  %}
             <td><img src="/media/profile_image/doctor.png" width = "100"></td>
             {% endif %} 
-            <td> <a href="{% url 'change_connection' operation='add' pk=doc.user.pk %}"> <button>Connect</button></a></td>           
+            <td> <a href="{% url 'change_connection' operation='add' pk=doc.user.pk %}"> <button class="btn btn-primary text-white">Connect</button></a></td>           
         </tr>
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% endif %}
 {% endblock %}

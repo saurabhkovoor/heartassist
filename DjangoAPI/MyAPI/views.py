@@ -308,7 +308,7 @@ def account(request):
             print(connectedPatients)
             print("has connected patients")
             hasConnectedPatients = True
-            context = {"connectedPatients": connectedPatients, "hasConnectedPatients": hasConnectedPatients, "heartForms": heartForms}
+            context = {"connectedPatients": connectedPatients, "hasConnectedPatients": hasConnectedPatients, "heartForms": heartForms, "currentDoctor":currentDoctor}
             for cpat in connectedPatients:
                 print(cpat.user.first_name)
             # return render(request, 'account_doctor.html', context)
@@ -383,7 +383,8 @@ def edit_account(request):
 def edit_account2(request):
     if request.method =="POST":
         user_form = EditProfileForm2(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST, instance=request.user)
+        # profile_form = ProfileUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
 
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
@@ -474,7 +475,7 @@ def change_connection(request, operation, pk):
             print(connectedPatients)
             print("has connected patients")
             hasConnectedPatients = True
-            context={"heartForms2": heartForms2, "hasTrials": hasTrials,"connectedPatients": connectedPatients, "hasConnectedPatients": hasConnectedPatients, "heartForms": heartForms}
+            context={"heartForms2": heartForms2, "hasTrials": hasTrials,"connectedPatients": connectedPatients, "hasConnectedPatients": hasConnectedPatients, "heartForms": heartForms, "currentDoctor":currentDoctor, "selectedPatient":u}
             for cpat in connectedPatients:
                 print(cpat.user.first_name)
             # return render(request, 'account_doctor.html', context)

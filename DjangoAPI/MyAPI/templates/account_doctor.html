@@ -1,97 +1,131 @@
 {% extends 'headerPage.html' %}
 {% block content%}
-<p>Doctor</p>
-{{request.user.first_name.capitalize}}
-{{request.user.last_name.capitalize}}
 
+<div class="container flex justify-center md:flex-row items-center px-6 mx-auto space-y-0 mt-10">
+    <div class="avatar mr-5">
+        <div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+            {%  if request.user.image.url != ""  %}
+            <img src="{{ request.user.image.url }}" width = "250">
+            {%  else  %}
+            <img src="/media/profile_image/profile.png" width = "250">
+            {% endif %}
+        </div>
+    </div>
+    <div class="ml-5">
+        <p>Doctor</p>
+        <p class="text-xl font-bold">{{request.user.first_name.capitalize}} {{request.user.last_name.capitalize}}</p>
+        <a href="{% url 'edit_account' %}"><button class="btn btn-active btn-primary text-white">Edit Profile Details</button></a>
+        <a href="{% url 'change_password' %}"><button class="btn btn-active btn-primary text-white mt-2">Change Password</button></a>
+    </div>
+</div>
+<div style="flex-wrap: wrap;" class="flex flex-row px-1 justify-center mt-10 mb-10">
+    <div>
+        <h3 class="text-xl font-bold mt-5">Profile Details</h3>
+        <p class="mt-5">Name</p>
+        <p class="text-primary font-bold">{{request.user.first_name.capitalize}}
+        {{request.user.last_name.capitalize}}</p>
+    </div>
+    <div class="ml-10">
+        <h3 class="text-xl font-bold mt-5">Contact Details</h3>
+        <p class="mt-5">Email Address</p>
+        <p class="text-primary font-bold">{{ request.user.email }}</p>
 
-{%  if request.user.image.url != ""  %}
-<img src="{{ request.user.image.url }}" width = "250">
-{%  else  %}
-<img src="/media/profile_image/doctor.png" width = "250">
-{% endif %}
-<h2>Profile</h2>
-<h3>Profile Details</h3>
-<p>Name</p>
-{{request.user.first_name.capitalize}}
-{{request.user.last_name.capitalize}}
+        <p class="mt-5">Phone Number</p>
+        <p class="text-primary font-bold">{{ request.user.phone_number }}</p>
+    </div>
+    <div class="ml-10">
+        <h3 class="text-xl font-bold mt-5">Other Details</h3>
+        <p class="mt-5">Registration/TPC Number</p>
+        <p class="text-primary font-bold">{{ currentDoctor.registrationNo }}</p>
 
-<h3>Contact Details</h3>
-<p>Email Address</p>
-<p>{{ request.user.email }}</p>
+        <p class="mt-5">Place of Practice</p>
+        <p class="text-primary font-bold">{{ currentDoctor.placeOfPractice}}</p>
 
-<p>Phone Number</p>
-<p>{{ request.user.phone_number }}</p>
-<a href="{% url 'edit_account' %}">Edit</a>
-<a href="{% url 'change_password' %}">Change Password</a>
-
-<h3>Other Details</h3>
-<p>Registration/TPC Number</p>
-<p>{{ request.user.registrationNo}}</p>
-<p>Place of Practice</p>
-<p>{{ request.user.placeOfPractice}}</p>
-<p>University</p>
-<p>{{ request.user.university}}</p>
+        <p class="mt-5">University</p>
+        <p class="text-primary font-bold">{{ currentDoctor.university}}</p>
+    </div>
+</div>
+<!-- <div style="flex-wrap: wrap;" class="flex flex-row px-1 justify-center mt-10 mb-10">
+    <div>
+        <h3 class="text-xl font-bold">Other Details</h3>
+        <p class="mt-4">Registration/TPC Number</p>
+        <p class="text-primary font-bold">{{ currentDoctor.registrationNo}}</p>
+    </div>
+    <div style="margin-left: 30px; margin-right: 30px;">
+        <h3>&nbsp;</h3>
+        <p class="mt-5">Place of Practice</p>
+        <p class="text-primary font-bold">{{ currentDoctor.placeOfPractice}}</p>
+    </div>
+    <div>
+        <h3>&nbsp;</h3>
+        <p class="mt-5">University</p>
+        <p class="text-primary font-bold">{{ currentDoctor.university}}</p>
+    </div>
+</div> -->
 
 {% if heartForms %}
-<h2>Heart Disease Risk Trials</h2>
-<table>
-    <thead>
-        <th>age</th>
-        <th>sex</th>
-        <th>cp</th>
-        <th>trestbps</th>
-        <th>chol</th>
-        <th>fbs</th>
-        <th>restecg</th>
-        <th>thalch</th>
-        <th>exang</th>
-        <th>oldpeak</th>
-        <th>slope</th>
-        <th>ca</th>
-        <th>thal</th>
-        <th>created_at</th>
-        <th>result</th>
-    </thead>
-    <tbody>
-        {% for hform in heartForms %}
-        <tr>
-            <td>{{hform.age}}</td>
-            <td>{{hform.sex}}</td>
-            <td>{{hform.cp}}</td>
-            <td>{{hform.trestbps}}</td>
-            <td>{{hform.chol}}</td>
-            <td>{{hform.fbs}}</td>
-            <td>{{hform.restecg}}</td>
-            <td>{{hform.thalch}}</td>
-            <td>{{hform.exang}}</td>
-            <td>{{hform.oldpeak}}</td>
-            <td>{{hform.slope}}</td>
-            <td>{{hform.ca}}</td>
-            <td>{{hform.thal}}</td>
-            <td>{{hform.created_at|date:'Y-m-d H:i'}}</td>
-            <td>{{hform.result}}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
+<div class="overflow-x-auto" style="max-width:70%;margin:auto;margin-bottom:40px;">
+<h2 class="text-xl font-bold text-primary mt-5 mb-5">Heart Disease Risk Trials</h2>
+<table class="table w-full text-center">
+<thead>
+    <th style="position:inherit">age</th>
+    <th>sex</th>
+    <th>cp</th>
+    <th>trestbps</th>
+    <th>chol</th>
+    <th>fbs</th>
+    <th>restecg</th>
+    <th>thalch</th>
+    <th>exang</th>
+    <th>oldpeak</th>
+    <th>slope</th>
+    <th>ca</th>
+    <th>thal</th>
+    <th>created_at</th>
+    <th>result</th>
+</thead>
+<tbody>
+    {% for hform in heartForms %}
+    <tr class="hover">
+        <td>{{hform.age}}</td>
+        <td>{{hform.sex}}</td>
+        <td>{{hform.cp}}</td>
+        <td>{{hform.trestbps}}</td>
+        <td>{{hform.chol}}</td>
+        <td>{{hform.fbs}}</td>
+        <td>{{hform.restecg}}</td>
+        <td>{{hform.thalch}}</td>
+        <td>{{hform.exang}}</td>
+        <td>{{hform.oldpeak}}</td>
+        <td>{{hform.slope}}</td>
+        <td>{{hform.ca}}</td>
+        <td>{{hform.thal}}</td>
+        <td>{{hform.created_at|date:'Y-m-d H:i'}}</td>
+        <td>{{hform.result}}</td>
+    </tr>
+    {% endfor %}
+</tbody>
 </table>
+</div>
 {% endif %}
+
 {% if hasConnectedPatients %}
-<h2>Connected Patients</h2>
-<table>
+<div class="overflow-x-auto" style="max-width:70%;margin:auto;margin-bottom: 40px;">
+<h2 class="text-xl font-bold text-primary mt-5 mb-5">Connected Patients</h2>
+<table class="table w-full text-center">
     <thead>
-        <th>name</th>
+        <th style="position:inherit">name</th>
+        <th>username</th>
         <th>phone</th>
         <th>email</th>
         <th>image</th>
         <th>action</th>
     </thead>
     <tbody>
-        
         {% for cpat in connectedPatients %}
-        <p>cpat</p>
-        <tr>
+        <tr class="hover">
             <td>{{cpat.user.first_name}} {{cpat.user.last_name}}</td>
+            <td>{{cpat.user.username}}</td>
             <td>{{cpat.user.phone_number}}</td>
             <td>{{cpat.user.email}}</td>
             {%  if cpat.user.image.url != ""  %}
@@ -100,19 +134,22 @@
             <td><img src="/media/profile_image/profile.png" width = "100"></td>
             {% endif %} 
             <td><ul> 
-                <li><a href="{% url 'change_connection' operation='remove-from-doctor' pk=cpat.user.pk %}"> <button>Remove</button></a></li>
-                <li><a href="{% url 'change_connection' operation='view-trials' pk=cpat.user.pk %}"><button>View Trial Results</button></a></li>
+                <li><a href="{% url 'change_connection' operation='remove-from-doctor' pk=cpat.user.pk %}"> <button class="btn btn-primary text-white">Remove</button></a></li>
+                <li class="mt-5"><a href="{% url 'change_connection' operation='view-trials' pk=cpat.user.pk %}"><button class="btn btn-primary text-white">View Trial Results</button></a></li>
             </ul></td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% endif %}
+
 {%  if hasTrials  %}
-<h2>Heart Disease Risk Trials</h2>
-<table>
+<div class="overflow-x-auto" style="max-width:70%;margin:auto; margin-bottom:40px">
+    <h2 class="text-xl font-bold text-primary mt-5 mb-5">{{selectedPatient.first_name.capitalize}} {{selectedPatient.last_name.capitalize}}'s Heart Disease Risk Trials</h2>
+<table class="table w-full text-center">
 <thead>
-    <th>age</th>
+    <th style="position:inherit">age</th>
     <th>sex</th>
     <th>cp</th>
     <th>trestbps</th>
@@ -130,7 +167,7 @@
 </thead>
 <tbody>
     {% for hform2 in heartForms2 %}
-    <tr>
+    <tr class="hover">
         <td>{{hform2.age}}</td>
         <td>{{hform2.sex}}</td>
         <td>{{hform2.cp}}</td>
@@ -150,9 +187,7 @@
     {% endfor %}
 </tbody>
 </table>
+</div>
 {% else %}
 {% endif %}
-<!-- <h2>Connect With a Patient</h2> -->
-
-
 {% endblock %}

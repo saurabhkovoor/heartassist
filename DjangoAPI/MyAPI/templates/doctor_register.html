@@ -1,45 +1,49 @@
+{% extends 'headerPage.html' %}
+{% block content%}
 {% load widget_tweaks %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
-    crossorigin="anonymous">
-    <title>Demo Registration</title>
-</head>
-<body>
-
-    <section>
-        <div class="container">
-          <div class="row">
-            <div class="col-md-6 mx-auto">
-              <div class="card">
-                <div class="card-header text-black">
-                  <h2>Register</h2>
-                </div>
-                <div class="card-body">
-                    <form action="{% url 'doctor_register' %}" method="POST" novalidate>
-                      {% csrf_token %}
-                         {% for field in form.visible_fields %}
-                           <div class="form-group">
-                               {{ field.label_tag }}
-                                  {% render_field field class="form-control" %}
-                                    {% for error in field.errors %}
-                                      <span style="color:red">{{ error }}</span>
-                                    {% endfor %}
-                         {% endfor %}
-                             <input type="submit" value="Register" class="btn btn-block btn-primary">
-                           </div>
-                    </form>
-                 </div>
-                    </div>   
-                </div>
-              </div>
-            </div>
-        </div>
-      </section>
-
-</body>
-</html>
+<section>
+  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto">
+      <a href="{% url 'heartForm' %}" class="flex items-center mb-6 text-2xl font-semibold text-gray-900">
+          <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo">
+          HeartAssist    
+      </a>
+      <div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
+          <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+              <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+                  Create a Doctor Account
+              </h1>
+              <form class="space-y-4 md:space-y-6" action="{% url 'doctor_register' %}" method="POST">
+                {% csrf_token %}
+                    {% for field in form.visible_fields %}
+                      <div class="form-group">
+                        <label class="block mb-2 mt-4 text-sm font-medium text-gray-900"> {{ field.label_tag }} </label>
+                        {% render_field field class="bg-gray-50 mb-2 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" %}
+                              {% for error in field.errors %}
+                                <span style="color:red">{{ error }}</span>
+                              {% endfor %}
+                              {% if messages%}
+                              {% for message in messages %}
+                                <span style="color:red">{{ message }}</span>
+                              {% endfor %}
+                              {% endif %}
+                    {% endfor %}
+                        <!-- <input type="submit" value="Register" class="btn btn-block btn-primary"> -->
+                      </div>
+                  <div class="flex items-start pt-4">
+                      <div class="flex items-center h-5">
+                        <input id="terms" aria-describedby="terms" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300" required="">
+                      </div>
+                      <div class="ml-3 text-sm">
+                        <label for="terms" class="font-light text-gray-500">I accept the <a class="font-medium text-primary-600 hover:underline" href="#">Terms and Conditions</a></label>
+                      </div>
+                  </div>
+                  <button type="submit" value="Register" style="background-color: #45adee;" class="w-full my-5 text-white btn btn-primary">Create a doctor account</button>
+                  <p class="text-sm font-light text-gray-500">
+                      Already have an account? <a href="{% url 'login' %}" class="font-medium text-primary-600 hover:underline">Log in here</a>
+                  </p>
+              </form>
+          </div>
+      </div>
+  </div>
+</section>
+{% endblock %}
