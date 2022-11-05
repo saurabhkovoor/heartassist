@@ -130,7 +130,6 @@ def heartResult(request):
 
 
 def heartForm(request):
-    print(request)
     if request.method == 'POST':
         # print(request.POST)
         form = heartDiseasePredictionForm(request.POST)
@@ -246,7 +245,6 @@ def heartForm(request):
                 # return JsonResponse("Added Successfully", safe = False)
             # return JsonResponse("Failed to Add", safe = False)
             return render(request, "heartForm.html", context)
-    print("form is not valid")        
     form = heartDiseasePredictionForm()
 
     return render(request, "heartForm.html", {"form": form})
