@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  djangoapi:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - static_vol:/app/MyAPI/staticfiles_build/static
+      - media_vol:/app/MyAPI/media
+    ports:
+      - "8000:8000"
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_vol:/app/MyAPI/staticfiles_build/static
+      - media_vol:/app/MyAPI/media
+    ports:
+      - "80:80"
+    depends_on:
+      - djangoapi
+
+volumes:
+  static_vol:
+  media_vol:
