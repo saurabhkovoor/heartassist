@@ -1,5 +1,1 @@
 # Environments
-.env
-env/
-.env.*
-!.env.example
