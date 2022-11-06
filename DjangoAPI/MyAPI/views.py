@@ -130,6 +130,7 @@ def heartResult(request):
 
 
 def heartForm(request):
+    print("Program Started")
     if request.method == 'POST':
         # print(request.POST)
         form = heartDiseasePredictionForm(request.POST)
