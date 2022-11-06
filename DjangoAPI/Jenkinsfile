@@ -5,7 +5,7 @@ pipeline {
     stages {
         stage("Build Django App") {
             steps {
-                sh 'sudo docker-compose up -f ./DjangoAPI/docker-compose.yml -d —build'
+                sh 'sudo docker-compose up --build'
             }
         }
     }
