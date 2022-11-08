@@ -245,7 +245,8 @@ def heartForm(request):
                 # return JsonResponse("Added Successfully", safe = False)
             # return JsonResponse("Failed to Add", safe = False)
             return render(request, "heartForm.html", context)
-    form = heartDiseasePredictionForm()
+    else:
+        form = heartDiseasePredictionForm()
 
     return render(request, "heartForm.html", {"form": form})
 

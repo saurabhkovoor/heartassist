@@ -55,12 +55,19 @@ class heartDiseasePredictionForm(ModelForm):
         }
     # fields = '__all__'
     #exclude = 'firstname'
+    def clean_age(self, *args, **kwargs):
+        age = self.cleaned_data.get("age")
+        if age < 0:
+            raise forms.ValidationError("Age cannot be negative.")
+        if age < 27:
+            raise forms.ValidationError("You are too young. This model best caters to patients older than 27")
+        return age
 
 class DoctorSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     phone_number = forms.CharField(required=True)
-    email = forms.CharField(required=True)
+    email = forms.EmailField(required=True)
     registrationNo = forms.CharField(required=True)
     placeOfPractice = forms.CharField(required=True)
     university = forms.CharField(required=True)
@@ -89,7 +96,7 @@ class PatientSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     phone_number = forms.CharField(required=True)
-    email = forms.CharField(required=True)
+    email = forms.EmailField(required=True)
     connectedDoctor = forms.HiddenInput()
 
     class Meta(UserCreationForm.Meta):

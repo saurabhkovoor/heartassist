@@ -91,9 +91,10 @@
 </div>
 {% endif %}
 
-{% if hasConnectedPatients %}
+
 <div class="overflow-x-auto" style="max-width:70%;margin:auto;margin-bottom: 40px;">
 <h2 class="text-xl font-bold text-primary mt-5 mb-5">Connected Patients</h2>
+{% if connectedPatients %}
 <table class="table w-full text-center">
     <thead>
         <th style="position:inherit">name</th>
@@ -126,6 +127,8 @@
         </tr>
         {% endfor %}
     </tbody>
+    {%else%}
+    <p class="text-xl font-bold text-primary text-center">No patients have connected with you yet.</p>
 </table>
 </div>
 {% endif %}
