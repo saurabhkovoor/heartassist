@@ -11,12 +11,22 @@
         predicts the likelihood of you developing cardiovascular diseases or heart
         diseases over the next 10 years. <br>It requires some physiological data inputs
         which are potential risk factors to calculator your risk. So, be sure to enter
-        your most recent values. Hello</p>
+        your most recent values.</p>
+        <p>&nbsp;</p>
+        <p><b>Disclaimer</b>, this system is only for educational and research purposes 
+          to understand the application, strengths and weaknesses of ML models and the features that are significant 
+          for this problem domain of heart disease prediction/classification to aid doctor's decision-making, diagnosis, and data-keeping. 
+          Hence, the verdict provided by this system is not definitive, and you should always consult with a healthcare professional 
+          for the best diagnosis and verdict.</p>
+        <p>Considering that the form requires some technical or medical information, it would be best to obtain these 
+          information from a healthcare professional. In fact, healthcare professionals 
+          can complete and save this form and its results on with their patients data as well.
+        </p>
         <!-- <a href="#heartCalc"><button class="btn btn-primary">Start Calculating</button></a> -->
     </div>
   </div>
 </div>
-<div class="grid place-items-center">
+<div style="padding: 0 30px" class="grid place-items-center">
 <article class="prose">
 <h3 id="heartCalc" class="pt-5">
     Notes:
@@ -27,7 +37,7 @@
         <li>The calculator may overestimate or underestimate your risk, hence, it cannot classify for certain
             100% whether you will have a cardiovascular event.</li>
         <li>You can save your records to the system for future viewing or comparisons, by signing up or logging
-            in to your patient account.</li>
+            in to your account.</li>
 </ul>
 
 <h3>Enter the patient's information below:</h3>
@@ -39,7 +49,7 @@
             {% if field == form.user or field == form.result %}
             {% render_field field style="visibility:hidden;" %}
             {% else %}
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-10 mb-5"> {{ field.label_tag }} </label>
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} </label>
             <!-- {{ field.label_tag }} -->
             {% render_field field class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-10 leading-tight focus:outline-none focus:bg-white" %}
                 {% for error in field.errors %}

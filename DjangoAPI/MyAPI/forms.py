@@ -40,7 +40,18 @@ class heartDiseasePredictionForm(ModelForm):
             "user": forms.HiddenInput()
         }
         labels={
-            "cp": "Cornete Perru"
+            "sex": "Gender",
+            "cp": "Chest Pain Type",
+            "trestbps": "Resting Blood Pressure (mmHg)",
+            "chol": "Cholesterol (mg/dL)",
+            "fbs": "Fasting Blood Sugar (more than 120mg/dL)",
+            "restecg": "Resting ECG Results",
+            "thalch": "Maximum Heart Rate (beats per min)",
+            "exang": "Presence of Exercise Induced Angina",
+            "oldpeak": "ST Depression",
+            "slope": "Slope of Peak Exercise ST Segment (-10.0 to 10.0)",
+            "ca": "No. of Fluoroscopy-Coloured Major Vessels",
+            "thal": "Thalium Stress Test"
         }
     # fields = '__all__'
     #exclude = 'firstname'
