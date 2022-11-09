@@ -49,8 +49,13 @@
             {% if field == form.user or field == form.result %}
             {% render_field field style="visibility:hidden;" %}
             {% else %}
+            {% if field == form.age %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Enter your age. The predictive model caters to ages 27 and above."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.cp %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="hello"><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% else %}
             <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} </label>
-            <!-- {{ field.label_tag }} -->
+            {% endif %}
             {% render_field field class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-10 leading-tight focus:outline-none focus:bg-white" %}
                 {% for error in field.errors %}
                     <span style="color:red">{{ error }}</span>

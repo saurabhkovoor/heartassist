@@ -17,6 +17,7 @@ from collections import Counter
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV, StratifiedKFold
 from sklearn.preprocessing import StandardScaler, MaxAbsScaler, MinMaxScaler, OneHotEncoder, LabelEncoder
 from sklearn.compose import ColumnTransformer
+from sklearn.impute import KNNImputer
 
 # Importing Libraries - Model Creation
 from sklearn.neighbors import KNeighborsClassifier
@@ -143,27 +144,39 @@ def modelValidation(y_test, y_pred):
     print("Misclassification Rate: {}".format(1-accuracy_score(y_test, y_pred)))
     print("matthews_corrcoef Rate: {}".format(matthews_corrcoef(y_test, y_pred)))
 
+def ApplyEncoder(OriginalColumn): 
+    global df
+    Encoder = LabelEncoder()
+    Encoder.fit(df[OriginalColumn])
+    return Encoder.transform(df[OriginalColumn])
 
 # Data Acquisition
 df = pd.read_csv('DjangoAPI/dataset/uci3.csv')
 
+# size of the dataset, (rows, cols)
 print("Size of UCI dataset: " + str(df.shape))
 
 # Data Understanding
-nullAttributes = df.isnull().sum()
+# information of the dataframe
 print(df.info())
-print("describe:")
+
+# description of the dataframe
+print("describe 1:")
 print(df.describe().transpose())
 
+# number of null attributes in each column
+nullAttributes = df.isnull().sum()
 missingVals = df.isna().sum() #df.isnull().sum()
+print(nullAttributes)
+print(missingVals)
 
 #EDA
-
 # Distribution of Heart Disease
 # sns.countplot(x = "num", data = df)
 df.loc[:, 'num'].value_counts()
 print(df["num"].value_counts())  #see the distribution of heart disease level
 
+# Data Visualisation
 # sns.countplot(x=df['HeartDisease'],hue='Sex',data=df)
 # sns.countplot(x=df['HeartDisease'],hue='ChestPainType',data=df)
 
@@ -201,7 +214,20 @@ print("df.dtypes")
 print(df.dtypes) # to identify the datatypes, identify the categorical datatype values to convert to dummy variables
 
 
-
+obj_cols = df.columns[df.dtypes == "object"]
+list(obj_cols)
+for col in obj_cols:
+    df[col] = ApplyEncoder(col)
+# le=LabelEncoder()
+# print("before label encoder")
+# print(df)
+# df['sex']=le.fit_transform(df['sex'])
+# df['restecg']=le.fit_transform(df['restecg'])
+# df['cp']=le.fit_transform(df['cp'])
+# df['exang']=le.fit_transform(df['exang'])
+# df['slope']=le.fit_transform(df['slope'])
+# print("after label encoder")
+# print(df)
 
 xtr= df.iloc[:,0:13]
 y = df.iloc[:,13] # including only num, if HD, include 14
@@ -211,34 +237,35 @@ y = df.iloc[:,13] # including only num, if HD, include 14
 # print(y.shape)
 # print(xtr.shape)
 
-le=LabelEncoder()
-print("before label encoder")
-print(df)
-df['sex']=le.fit_transform(df['sex'])
-df['restecg']=le.fit_transform(df['restecg'])
-df['cp']=le.fit_transform(df['cp'])
-df['exang']=le.fit_transform(df['exang'])
-df['slope']=le.fit_transform(df['slope'])
-print("after label encoder")
-print(df)
-
-
-# Replacing missing values
-xtr["trestbps"].fillna(xtr["trestbps"].mean(), inplace=True)
-xtr["chol"].fillna(xtr["chol"].mean(), inplace=True)
-xtr["fbs"].fillna(xtr["fbs"].mode()[0], inplace=True)
-xtr["restecg"].fillna(xtr["restecg"].mode()[0], inplace=True)
-xtr["thalch"].fillna(xtr["thalch"].mean(), inplace=True)
-xtr["exang"].fillna(xtr["exang"].mode()[0], inplace=True)
-xtr["oldpeak"].fillna(xtr["oldpeak"].mean(), inplace=True)
-xtr["slope"].fillna(xtr["slope"].mode()[0], inplace=True)
-xtr["ca"].fillna(xtr["ca"].mean(), inplace=True)
-xtr["thal"].fillna(xtr["thal"].mode()[0], inplace=True)
-missingVals2 = df.isna().sum()
-
-
 ## Methods to Convert Categorical Data to Numerical
 transformed_x=pd.get_dummies(xtr)
+print("transformed X")
+print(transformed_x.transpose())
+
+# Data Imputation
+
+# Replacing missing values
+# xtr["trestbps"].fillna(xtr["trestbps"].mean(), inplace=True)
+# xtr["chol"].fillna(xtr["chol"].mean(), inplace=True)
+# xtr["fbs"].fillna(xtr["fbs"].mode()[0], inplace=True)
+# xtr["restecg"].fillna(xtr["restecg"].mode()[0], inplace=True)
+# xtr["thalch"].fillna(xtr["thalch"].mean(), inplace=True)
+# xtr["exang"].fillna(xtr["exang"].mode()[0], inplace=True)
+# xtr["oldpeak"].fillna(xtr["oldpeak"].mean(), inplace=True)
+# xtr["slope"].fillna(xtr["slope"].mode()[0], inplace=True)
+# xtr["ca"].fillna(xtr["ca"].mean(), inplace=True)
+# xtr["thal"].fillna(xtr["thal"].mode()[0], inplace=True)
+# missingVals2 = df.isna().sum()
+
+print("before null")
+print(transformed_x.isnull().sum())
+
+imputer = KNNImputer(n_neighbors=2)
+transformed_x = imputer.fit_transform(transformed_x)
+
+print("after null")
+transformed_x = pd.DataFrame(transformed_x)
+print(transformed_x.isnull().sum())
 
 # SMOTE
 smt = SMOTE(sampling_strategy='not majority')
