@@ -19,7 +19,7 @@ class heartDiseasePredictionForm(ModelForm):
             "cp": "Chest Pain Type",
             "trestbps": "Resting Blood Pressure (mmHg)",
             "chol": "Cholesterol (mg/dL)",
-            "fbs": "Fasting Blood Sugar (more than 120mg/dL)",
+            "fbs": "Fasting Blood Sugar (less than 120mg/dL)",
             "restecg": "Resting ECG Results",
             "thalch": "Maximum Heart Rate (beats per min)",
             "exang": "Presence of Exercise Induced Angina",
@@ -37,6 +37,38 @@ class heartDiseasePredictionForm(ModelForm):
         if age < 27:
             raise forms.ValidationError("You are too young. This model best caters to patients older than 27")
         return age
+
+    def clean_trestbps(self, *args, **kwargs):
+        trestbps = self.cleaned_data.get("trestbps")
+        if trestbps < 80:
+            raise forms.ValidationError("The resting blood pressure rate is too low. Choose values between 80 - 200 mmHg.")
+        if trestbps > 200:
+            raise forms.ValidationError("The resting blood pressure rate is too high. Choose values between 80 - 200 mmHg.")
+        return trestbps
+
+    def clean_chol(self, *args, **kwargs):
+        chol = self.cleaned_data.get("chol")
+        if chol < 85:
+            raise forms.ValidationError("The cholestrol level is too low. Choose values between 85 - 610 mg/dl.")
+        if chol > 610:
+            raise forms.ValidationError("The cholestrol level is too high. Choose values between 85 - 610 mg/dl.")
+        return chol
+    
+    def clean_thalch(self, *args, **kwargs):
+        thalch = self.cleaned_data.get("thalch")
+        if thalch < 60:
+            raise forms.ValidationError("The maximum heart rate level is too low. Choose values between 60 - 210 bpm.")
+        if thalch > 210:
+            raise forms.ValidationError("The maximum heart rate level is too high. Choose values between 60 - 210 bpm.")
+        return thalch
+
+    def clean_oldpeak(self, *args, **kwargs):
+        oldpeak = self.cleaned_data.get("oldpeak")
+        if oldpeak < -10:
+            raise forms.ValidationError("The ST depression level is too low. Choose values between -10.0 to 10.0.")
+        if oldpeak > 10:
+            raise forms.ValidationError("The ST depression level is too high. Choose values between -10.0 to 10.0.")
+        return oldpeak
 
 class DoctorSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)

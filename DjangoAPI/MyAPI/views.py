@@ -86,7 +86,7 @@ def ohevalue(df):
 
 def heartResult(request):
     try:
-        mdl=joblib.load("MyAPI/heart-strat2.pkl")
+        mdl=joblib.load("MyAPI/heart-strat.pkl")
         scalers=joblib.load("MyAPI/scalers.pkl")
         X=scalers.transform(request)
         y_pred=mdl.predict(X)
@@ -118,6 +118,28 @@ def heartForm(request):
             addd = []
             if int(myDict["age"])>60:
                 addd.append("age")
+            if myDict["cp"]!="non-anginal":
+                addd.append("cp")
+            if int(myDict["trestbps"])>130:
+                addd.append("trestbps")
+            if int(myDict["chol"])>200:
+                addd.append("chol")
+            if myDict["fbs"]!="FALSE":
+                addd.append("fbs")
+            if myDict["restecg"]!="normal":
+                addd.append("restecg")
+            if int(myDict["thalch"])>160:
+                addd.append("thalch")
+            if myDict["exang"]!="TRUE":
+                addd.append("exang")
+            if int(myDict["oldpeak"]) < -4:
+                addd.append("oldpeak")
+            if myDict["slope"]!="upsloping":
+                addd.append("slope")
+            if int(myDict["ca"]) < 1:
+                addd.append("ca")
+            if myDict["thal"]!="normal":
+                addd.append("thal")
            
             answer = heartResult(ohevalue(df))
             context = {"answer": answer, "form": form, "addd": addd}

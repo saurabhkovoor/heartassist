@@ -53,7 +53,29 @@
             {% if field == form.age %}
             <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Enter your age. The predictive model caters to ages 27 and above."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
             {% elif field == form.cp %}
-            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="hello"><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Angina is a type of chest pain or discomfort brought on by a lack of oxygen-rich blood to the heart muscle."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.sex %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Choose your gender."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.trestbps %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Resting blood pressure is a common indicator of heart disease risk. Typical values range from 80-200, with values exceeding 130-140 being cause for concern."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.chol %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Your serum cholestrol level, ranging from 85 to 603, with values exceeding 200 being cause for concern."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.fbs %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Is your fasting blood sugar level less than 120 mg/dl? If so, choose True, else, choose False."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.restecg %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="What is the condition of your resting electrocardiograph results? You might need to check your reports or consult with a healthcare professional for accurate input."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.thalch %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Enter your maximum heart rate. (in beats per minute)"><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.exang %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Do you experience exercised induced angina? If yes, choose True, else, choose False."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.oldpeak %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Enter your ST depression level induced by exercise relative to rest. You might need to check your reports or consult with a healthcare professional for accurate input."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.slope %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Choose the slope type of the peak exercise ST segment."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.ca %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Enter the number of major vessels (0-3) colored by fluoroscopy. This indicates the number of major blood vessels with clot-free blood flow."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
+            {% elif field == form.thal %}
+            <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} <div class="tooltip" data-tip="Enter the thalium stress test level. This indicates the thalassemia level."><i class="fa-solid fa-circle-info text-primary"></i></div></label>
             {% else %}
             <label class="block tracking-wide text-gray-700 text-s font-bold mt-10 mb-5"> {{ field.label_tag }} </label>
             {% endif %}
@@ -124,15 +146,49 @@
     {% if addd%}
     <div class="collapse">
     <input type="checkbox" class="peer" /> 
-        <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-        Click me to show potential factors
+        <div class="collapse-title bg-primary text-white peer-checked:bg-secondary peer-checked:text-secondary-content">
+        Click me to show/hide potential factors
         <h3 class="card-title">Potential Factors</h3>
         </div> 
-        <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content"> 
-            {%  if "age" in addd  %}
-            <p> You're old</p>
+        <div class="collapse-content bg-primary text-white peer-checked:bg-secondary peer-checked:text-secondary-content"> 
+          <ul class="text-left">  
+          {%  if "age" in addd  %}
+            <li class="pt-5 pb-5"><b>Age</b>. With the risk of developing cardiovascular or heart diseases roughly tripling with each decade of life, age is a significant risk factor.<br></li>
             {% endif %}
-            
+            {%  if "cp" in addd  %}
+            <li class="pt-5 pb-5"><b>Chest pain type</b>. Angina is a type of chest pain or discomfort brought on by a lack of oxygen-rich blood to the heart muscle, and so a significant risk factor.<br></li>
+            {% endif %}
+            {%  if "trestbps" in addd  %}
+            <li class="pt-5 pb-5"><b>Resting blood pressure</b>. The arteries that supply your heart can become damaged over time by high blood pressure, and so a significant risk factor. Consider eating food with less Sodium and salt.<br></li>
+            {% endif %}
+            {%  if "chol" in addd  %}
+            <li class="pt-5 pb-5"><b>Cholesterol</b>. The most likely cause of artery narrowing is a high level of low-density lipoprotein (LDL) cholesterol, also known as "bad" cholesterol. Consider eating food with lesser lipid content and practicing a healthier lifestyle and diet.<br></li>
+            {% endif %}
+            {%  if "fbs" in addd  %}
+            <li class="pt-5 pb-5"><b>Fasting Blood Sugar</b>. Your body's blood sugar levels rise as a result of insufficient pancreatic hormone production or improper insulin response, which raises your risk of having a heart attack.<br></li>
+            {% endif %}
+            {%  if "restecg" in addd  %}
+            <li class="pt-5 pb-5"><b>Resting electrocardiographic (ECG) results</b>. USPSTF comes to the conclusion that the potential risks of screening with a resting or exercise ECG are equal to or greater than the potential benefits for people at low risk of cardiovascular disease. Levels 1 and 2 are strong indicators.<br></li>
+            {% endif %}
+            {%  if "thalch" in addd  %}
+            <li class="pt-5 pb-5"><b>Maximum heart rate achieved</b>. An increase in heart rate by 10 beats per minute is associated with an increase in the risk of cardiac death by at least 20%.<br></li>
+            {% endif %}
+            {%  if "exang" in addd  %}
+            <li class="pt-5 pb-5"><b>Exercise induced angina</b>. Angina can cause mild to severe pain or discomfort that typically feels tight, gripping, or squeezing. Angina is typically felt in the middle of the chest, but it can also affect one or both shoulders, as well as your back, neck, jaw, arm or hands. It is a strong indicator of heart disease presence.<br></li>
+            {% endif %}
+            {%  if "oldpeak" in addd  %}
+            <li class="pt-5 pb-5"><b>ST depression induced by exercise</b>. When exercising, a heart that is unhealthy will be under more stress. Thus, this is a key indicator of prevalent heart disease in a patient.<br></li>
+            {% endif %}
+            {%  if "slope" in addd  %}
+            <li class="pt-5 pb-5"><b>Slope of the peak exercise ST segment</b>. When the ST-segment depression is flat or downward-sloping and is greater than 1 mm 60–80 ms after the J point, the treadmill ECG stress test is deemed abnormal. A key indicator of prevalent heart disease in a patient.<br></li>
+            {% endif %}
+            {%  if "ca" in addd  %}
+            <li class="pt-5 pb-5"><b>Number of major vessels</b>. A colored vessel indicates that the physician can see the blood flowing through it. The more blood movement, the better, indicating absence of clots and better heart health. With lesser blood vessels, this is a key indicator of heart disease presence.<br></li>
+            {% endif %}
+            {%  if "thal" in addd  %}
+            <li class="pt-5 pb-5"><b>Thalium stress test level</b>. Thalassemia is an inherited blood disorder that causes your body to have less hemoglobin than usual. Thus, it has correlations with the likelihood for a patient to develop heart disease.<br></li>
+            {% endif %}
+          </ul>  
         </div>
     </div>
     {%else%}
@@ -142,7 +198,7 @@
 </div>
 {% endif %}
 
-<div class="btn-group prose">
+<div class="btn-group prose" style="padding-bottom:20px;">
 <button class="btn btn-primary text-white" onclick="window.print();return false;" >Print</button>
 <button class="btn btn-info text-white" onclick="window.location.href=window.location.href">Retry</button>
 </div>

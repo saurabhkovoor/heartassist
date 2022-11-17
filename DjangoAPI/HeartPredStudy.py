@@ -97,7 +97,10 @@ def ApplyEncoder(OriginalColumn):
     return Encoder.transform(df[OriginalColumn])
 
 # Data Acquisition
-df = pd.read_csv('DjangoAPI/dataset/uci3.csv')
+try:
+  df = pd.read_csv('dataset/uci3.csv')
+except:
+  df = pd.read_csv('DjangoAPI/dataset/uci3.csv')
 
 # size of the dataset, (rows, cols)
 print("Size of UCI dataset: " + str(df.shape))
@@ -188,30 +191,16 @@ transformed_x = sc.transform(transformed_x)
 print("describe 2:")
 print(df.describe().transpose())
 
-
-#heatmap
-# corr = df.corr()
-# plt.figure(figsize=(14,14))
-# sns.heatmap(corr, annot=True, fmt= '.2f',annot_kws={'size': 15}, cmap= 'coolwarm')
-# plt.show()
-# print(corr)
-# plt.figure(figsize=(14,14))
-# sns.heatmap(df.corr())
-# plt.show()
-
 # Data Partitioning
 x_train, x_test, y_train, y_test = train_test_split(transformed_x, y, test_size=0.2, random_state=42,shuffle=True)
 
 #Model Creation
 compare_models = []
 
-##IMPORTANT - for pickling##
-# filename = "heart-strat.pkl"
-# joblib.dump(classifier, filename)
-
 #Ridge Classifier - Linear Model
 print("Ridge Classifier with Hyperparameter Tuning")
 parameters = {'solver':("auto", "svd", "cholesky", "lsqr", "sparse_cg", "sag", "saga", "lbfgs"), 'alpha': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]}
+parameters = {'solver':["sag"], 'alpha': [0.3]}
 
 rdg_model_wh = RidgeClassifier()
 clf = GridSearchCV(rdg_model_wh, parameters, verbose=2)
@@ -243,6 +232,8 @@ compare_models.append(RGresults2)
 print("\n#######\nSupport Vector Machines with Hyperparameter Tuning\n")
 parameters = {'kernel':('linear', 'rbf', 'poly', 'sigmoid'), 'C':[0.1, 0.5, 1, 2, 5, 10, 20],
               'gamma':[0.001, 0.01, 0.1, 0.25, 0.5, 0.75, 1]}
+parameters = {'kernel':['rbf'], 'C':[20],
+              'gamma':[1]}
 
 svc_model_wh = SVC(decision_function_shape='ovo')
 clf = GridSearchCV(svc_model_wh, parameters, verbose=2)
@@ -274,6 +265,7 @@ compare_models.append(SVCresults2)
 #K-Nearest Neighbors Model
 print("\n#######\nK-Nearest Neighbors\n")
 parameters = {'n_neighbors' : [3,5,7,9,11,13,15,17,19,21,23,25,27,29], 'weights' :['uniform', 'distance']}
+parameters = {'n_neighbors' : [3], 'weights' :['distance']}
 
 knn_model_wh = KNeighborsClassifier()
 clf = GridSearchCV(knn_model_wh, parameters, verbose=2)
@@ -304,6 +296,7 @@ compare_models.append(KNNresults2)
 #Naive Bayes (Gaussian Naive Bayes) Model
 print("\n#######\nNaive Bayes (Gaussian Naive Bayes)\n")
 parameters = {'var_smoothing': np.logspace(0,-9, num=100)}
+parameters = {'var_smoothing': [0.43287612810830584]}
 
 nb_model_wh = GaussianNB()
 clf = GridSearchCV(nb_model_wh, parameters, verbose=2)
@@ -337,6 +330,10 @@ print("\n#######\nDecision Trees\n")
 parameters = {
     'max_depth' : [None,4,5,6,7,8,9],
     'criterion' :['gini', 'entropy','log_loss']
+   }
+parameters = {
+    'max_depth' : [None],
+    'criterion' :['gini']
    }
 
 dt_model_wh = DecisionTreeClassifier()
@@ -450,6 +447,8 @@ endTest = time.time()
 RFresults2 = modelValidation(y_test, y_pred, startTrain, endTrain, startTest, endTest, "RF")
 compare_models.append(RFresults2)
 
+
+
 #Extra Trees Model
 print("\n#######\nExtraTreesClassifier\n")
 
@@ -539,6 +538,7 @@ compare_models.append(KMCresults2)
 #Logistic Regression
 print("\n#######\nLogistic Regression\n")
 parameters = {'C':[1.0, 10.0, 100.0, 1000.0], 'solver': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']}
+parameters = {'C':[1000.0], 'solver': ['lbfgs']}
 
 lr_model_wh = LogisticRegression()
 clf = GridSearchCV(lr_model_wh, parameters, verbose=2)
@@ -600,31 +600,36 @@ estimatorslist=[["SVC", svc_model], ["KNN", knn_model], ["DT", dt_model], ["XGB"
 
 for model in estimatorslist:
   print("\n#######\nStacking Classifier - {}\n".format(model[0]))
-  SC_est_SVC = StackingClassifier(estimators = estimators, final_estimator = model[1])
+  stack_model = StackingClassifier(estimators = estimators, final_estimator = model[1])
 
   startTrain = time.time()
-  SC_est_SVC.fit(x_train, y_train)
+  stack_model.fit(x_train, y_train)
   endTrain = time.time()
 
   startTest = time.time()
-  y_pred = SC_est_SVC.predict(x_test)
+  y_pred = stack_model.predict(x_test)
   endTest = time.time()
 
   Stackresults = modelValidation(y_test, y_pred, startTrain, endTrain, startTest, endTest, "Stack-{}".format(model[0]))
   compare_models.append(Stackresults)
 
-# SC_est_SVC = StackingClassifier(estimators = estimators, final_estimator = svc_model)
+  # Checking the feature importance of the best performing model (the chosen model after model comparison was the Stacking classifier with RandomForest as final estimator)
+  if model[0] == "RF":
+    col = ["age", "trestbps", "chol", "thalch", "oldpeak", "ca", "sex_Female", "sex_Male", "cp_asymptomatic", "cp_atypical angina", "cp_non-anginal", "cp_typical angina", "fbs_False", "fbs_True", "restecg_lv hypertrophy", "restecg_normal", "restecg_st-t abnormality", "exang_False", "exang_True", "slope_downsloping", "slope_flat", "slope_upsloping", "thal_fixed defect", "thal_normal", "thal_reversable defect"]
+    feature = pd.Series(rf_model.feature_importances_, index = col).sort_values(ascending = False)
+    print("\n#######\Feature Importance\n")
+    print(feature)
 
-# startTrain = time.time()
-# SC_est_SVC.fit(x_train, y_train)
-# endTrain = time.time()
+    plt.figure(figsize = (10,6))
+    sns.barplot(x = feature, y = feature.index)
+    plt.title("Feature Importance")
+    plt.xlabel('Score')
+    plt.ylabel('Features')
+    plt.show()
 
-# startTest = time.time()
-# y_pred = SC_est_SVC.predict(x_test)
-# endTest = time.time()
-
-# Stackresults = modelValidation(y_test, y_pred, startTrain, endTrain, startTest, endTest, "Stack-SVC")
-# compare_models.append(Stackresults)
+    ##Saving/Pickling the best-performing chosen ML Model##
+    filename = "heart-strat.pkl"
+    joblib.dump(stack_model, filename)
 
 # Model Comparison/Selection
 print("\n#######\Comparison of Model Results\n")
