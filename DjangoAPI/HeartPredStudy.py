@@ -4,11 +4,6 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import seaborn as sns
 import os
-
-# ns
-from scipy import stats 
-from matplotlib import rcParams
-from matplotlib.cm import rainbow
 import warnings
 warnings.filterwarnings('ignore')
 from collections import Counter
@@ -17,6 +12,7 @@ from collections import Counter
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV, StratifiedKFold
 from sklearn.preprocessing import StandardScaler, MaxAbsScaler, MinMaxScaler, LabelEncoder
 from sklearn.impute import KNNImputer
+from imblearn.over_sampling import SMOTE
 
 # Importing Libraries - Model Creation
 from sklearn.neighbors import KNeighborsClassifier
@@ -25,19 +21,13 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, AdaBoostClassifier, StackingClassifier
 from sklearn.linear_model import LogisticRegression, RidgeClassifier, SGDClassifier
 from sklearn.naive_bayes import GaussianNB
-
 from sklearn.cluster import KMeans
 from sklearn.neural_network import MLPClassifier
-from imblearn.over_sampling import SMOTE
-
 from xgboost import XGBClassifier
-
-from kneed import KneeLocator
 
 # Importing Libraries - Model Creation (Neural Networks - keras)
 from keras.models import Sequential
 from keras.layers import Dense
-# from numpy import loadtxt
 
 import pickle
 import joblib
@@ -46,6 +36,7 @@ import time
 # Importing Libraries - Model Evaluation
 from sklearn.metrics import confusion_matrix, accuracy_score, f1_score,confusion_matrix, recall_score, precision_score, classification_report, average_precision_score, mean_squared_error, mean_absolute_error,matthews_corrcoef
 
+# Function to validate ML models
 def modelValidation(y_test, y_pred, startTrain =0, endTrain=0, startTest=0, endTest=0, classifierName=""):
     print("Results")
 
@@ -90,6 +81,7 @@ def modelValidation(y_test, y_pred, startTrain =0, endTrain=0, startTest=0, endT
 
     return [classifierName, acc, prec, rec, f1score, mse, rmse, mae, misclassRate, mcc, trainingTime, testingTime, totalTime]
 
+# Function to apply numerical encoding of dataframe categorical attributes (not used, as one-hot-encoding was chosen instead)
 def ApplyEncoder(OriginalColumn): 
     global df
     Encoder = LabelEncoder()
@@ -130,11 +122,104 @@ print()
 # sns.countplot(x = "num", data = df)
 print(df["num"].value_counts())  #see the distribution of heart disease level
 
+# Correlation Heatmap (multivariate)
+plt.figure(figsize=(20,12))
+sns.set_context('notebook',font_scale = 1.3)
+sns.heatmap(df.corr(),annot=True,linewidth =2)
+plt.tight_layout()
 
-# Data Preprocessing
 df['HD'] = [1 if x == 1 or x == 2 or x == 3 or x == 4 else 0 for x in df['num']] #separate column for presence/absence of heart disease
 # sns.countplot(x = "HD", data = df)
 
+# univariate plots
+num_feat = ['age', 'trestbps', 'chol', 'thalch', 'oldpeak', 'ca']
+cat_feat = df.dtypes==object
+cat_feat = df.columns[cat_feat].tolist()
+print(cat_feat)
+
+# density graph of numerical attributes
+df[num_feat].plot(kind='density', subplots=True, layout=(2,3), sharex=False, figsize= (16,8))
+plt.show()
+
+# bar chart of categorical attributes
+for i in range(len(cat_feat)):
+    df[cat_feat[i]].value_counts().plot(kind='bar')
+    plt.xticks(rotation='vertical')
+    plt.ylabel(cat_feat[i])
+    plt.show()
+    
+# box plot of numerical attributes
+for i in range(len(num_feat)):
+    df[num_feat[i]].value_counts().plot(kind='box')
+    plt.xticks(rotation='vertical')
+    plt.ylabel(num_feat[i])
+    plt.show()
+
+# multivariate plots
+# Correlation matrix
+corr_matrix=df.corr()
+fig, ax=plt.subplots(figsize= (15,10))
+ax=sns.heatmap(corr_matrix,
+annot=True,
+linewidths=0.5,
+fmt=".2f"
+)
+plt.show()
+# sns.set_context('notebook',font_scale = 2.3)
+# Correlation bar chart
+df.corrwith(df.num).plot(kind='bar', grid=True, figsize=(24, 10), 
+                                                        title="Correlation with the target feature")
+plt.show()
+
+# multivariate plots for categorical attributes
+print(pd.crosstab(df["cp"], df["num"]))
+pd.crosstab(df["cp"], df["num"]).plot(kind="bar")
+plt.title("Heart Disease Frequency per chest Pain Type")
+plt.xlabel("chest Pain types")
+plt.ylabel("Amount")
+plt.legend(['No disease', 'Disease 1', "Disease 2", "Disease 3", "Disease 4"])
+plt.xticks(rotation=0)
+
+print(pd.crosstab(df["fbs"], df["num"]))
+pd.crosstab(df["num"], df["fbs"]).plot(kind="bar")
+plt.title("Heart Disease Frequency vs Fasting Blood Sugar")
+plt.xlabel("Heart disease stage")
+plt.ylabel("Amount")
+plt.legend(['True', 'False'])
+plt.xticks(rotation=0)
+
+print(pd.crosstab(df["restecg"], df["num"]))
+pd.crosstab(df["restecg"], df["num"]).plot(kind="bar")
+plt.title("Heart Disease Frequency per ECG Results")
+plt.xlabel("ECG Results type")
+plt.ylabel("Amount")
+plt.legend(['No disease', 'Disease 1', "Disease 2", "Disease 3", "Disease 4"])
+plt.xticks(rotation=0)
+
+print(pd.crosstab(df["thal"], df["num"]))
+pd.crosstab(df["thal"], df["num"]).plot(kind="bar")
+plt.title("Heart Disease Frequency per Thalassemia_Types")
+plt.xlabel("Thalassemia_Types")
+plt.ylabel("Amount")
+plt.legend(['No disease', 'Disease 1', "Disease 2", "Disease 3", "Disease 4"])
+plt.xticks(rotation=0)
+
+sns.countplot(x='thal', hue='num', data=df) 
+plt.show()
+
+sns.countplot(x='sex', hue='num', data=df) 
+plt.show()
+
+sns.countplot(x='exang', hue='num', data=df) 
+plt.show()
+
+sns.countplot(x='slope', hue='num', data=df)
+plt.show()
+
+sns.countplot(x='cp', hue='num', data=df)
+plt.show()
+
+# Data Preprocessing
 #see the distribution of heart disease presence/absence 
 # shows that the dataset is not much imbalanced, so there is no need to balance
 print(df.loc[:, 'HD'].value_counts())
@@ -174,7 +259,7 @@ print("after null")
 transformed_x = pd.DataFrame(transformed_x)
 print(transformed_x.isnull().sum())
 
-# SMOTE
+# Oversampling using SMOTE
 smt = SMOTE(sampling_strategy='not majority')
 transformed_x, y = smt.fit_resample(transformed_x, y)
 
@@ -197,36 +282,6 @@ x_train, x_test, y_train, y_test = train_test_split(transformed_x, y, test_size=
 #Model Creation
 compare_models = []
 
-#Ridge Classifier - Linear Model
-print("Ridge Classifier with Hyperparameter Tuning")
-parameters = {'solver':("auto", "svd", "cholesky", "lsqr", "sparse_cg", "sag", "saga", "lbfgs"), 'alpha': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]}
-parameters = {'solver':["sag"], 'alpha': [0.3]}
-
-rdg_model_wh = RidgeClassifier()
-clf = GridSearchCV(rdg_model_wh, parameters, verbose=2)
-clf.fit(x_train, y_train)
-
-rdg_best_param = clf.best_params_
-print("Best params for ridge:", rdg_best_param)
-bestRDGSolver = rdg_best_param.get("solver")
-bestRDGAlpha = rdg_best_param.get("alpha")
-
-y_pred = clf.predict(x_test)
-RGresults1 = modelValidation(y_test, y_pred)
-
-print("\n#######\nRidge Classifier with Best Paramaters Applied, {} solver, {} alpha\n".format(bestRDGSolver,bestRDGAlpha))
-rdg_model = RidgeClassifier(alpha= bestRDGAlpha, solver= bestRDGSolver)
-
-startTrain = time.time()
-rdg_model.fit(x_train, y_train)
-endTrain = time.time()
-
-startTest = time.time()
-y_pred = rdg_model.predict(x_test)
-endTest = time.time()
-
-RGresults2 = modelValidation(y_test, y_pred, startTrain, endTrain, startTest, endTest, "Ridge")
-compare_models.append(RGresults2)
 
 #Support Vector Machines Model
 print("\n#######\nSupport Vector Machines with Hyperparameter Tuning\n")
@@ -448,7 +503,6 @@ RFresults2 = modelValidation(y_test, y_pred, startTrain, endTrain, startTest, en
 compare_models.append(RFresults2)
 
 
-
 #Extra Trees Model
 print("\n#######\nExtraTreesClassifier\n")
 
@@ -566,6 +620,7 @@ endTest = time.time()
 LRresults2 = modelValidation(y_test, y_pred, startTrain, endTrain, startTest, endTest, "LR")
 compare_models.append(LRresults2)
 
+
 # ANN Multilayer Perceptron
 print("\n#######\nArtificial Neural Network - Multilayer Perceptron\n")
 activation = "tanh" # previous test shows combination of tanh and adam produced the best scores
@@ -585,6 +640,7 @@ endTest = time.time()
 
 ANNresults = modelValidation(y_test, y_pred, startTrain, endTrain, startTest, endTest, "ANN")
 compare_models.append(ANNresults)
+
 
 # Stacking Classifier
 print("\n#######\nStacking Classifier\n")
@@ -631,12 +687,14 @@ for model in estimatorslist:
     filename = "heart-strat.pkl"
     joblib.dump(stack_model, filename)
 
+
 # Model Comparison/Selection
 print("\n#######\Comparison of Model Results\n")
 score_frame = pd.DataFrame(compare_models)
 score_frame.columns=["Name", "Acc", "Prec", "Rec", "F1-Score", "MSE", "RMSE", "MAE", "Misclass Rate", "MCC", "Training Time (s)", "Testing Time (s)", "TotalTime (s)"]
 print(score_frame)
 score_frame.to_excel("ModelCompare.xlsx")
+
 
 # ANN Multilayer Perceptron
 #testing effect of different hidden layers
@@ -750,12 +808,44 @@ def MLPMaxIterTest():
     nn_score_frame = pd.DataFrame(testedParameterAndMetrics[0:10][:])
     nn_score_frame.columns=["Maximum No. of Iterations", "Acc", "F1-Score", "Prec", "Training Time (s)", "Testing Time (s)", "Total Time (s)"]
     print(nn_score_frame)
+
 # Uncomment any of the following to initiate the corresponding test
 # MLPActivationAndSolverTest()
 # MLPNoOfLayerAndNeuron()
 # MLPMaxIterTest()
 
 # Other Models
+#Ridge Classifier - Linear Model
+# print("Ridge Classifier with Hyperparameter Tuning")
+# parameters = {'solver':("auto", "svd", "cholesky", "lsqr", "sparse_cg", "sag", "saga", "lbfgs"), 'alpha': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]}
+# parameters = {'solver':["sag"], 'alpha': [0.3]}
+
+# rdg_model_wh = RidgeClassifier()
+# clf = GridSearchCV(rdg_model_wh, parameters, verbose=2)
+# clf.fit(x_train, y_train)
+
+# rdg_best_param = clf.best_params_
+# print("Best params for ridge:", rdg_best_param)
+# bestRDGSolver = rdg_best_param.get("solver")
+# bestRDGAlpha = rdg_best_param.get("alpha")
+
+# y_pred = clf.predict(x_test)
+# RGresults1 = modelValidation(y_test, y_pred)
+
+# print("\n#######\nRidge Classifier with Best Paramaters Applied, {} solver, {} alpha\n".format(bestRDGSolver,bestRDGAlpha))
+# rdg_model = RidgeClassifier(alpha= bestRDGAlpha, solver= bestRDGSolver)
+
+# startTrain = time.time()
+# rdg_model.fit(x_train, y_train)
+# endTrain = time.time()
+
+# startTest = time.time()
+# y_pred = rdg_model.predict(x_test)
+# endTest = time.time()
+
+# RGresults2 = modelValidation(y_test, y_pred, startTrain, endTrain, startTest, endTest, "Ridge")
+# compare_models.append(RGresults2)
+
 # SGD Model
 # print("\n#######\SGDClassifier 1\n")
 # clf = SGDClassifier(max_iter=1000, tol=1e-4)
